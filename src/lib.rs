@@ -1,12 +1,14 @@
 pub const BOARD_SIZE: usize = 9;
 
 pub struct Board {
-    grid: [ [u8;  BOARD_SIZE]; BOARD_SIZE]
+    grid: [[u8; BOARD_SIZE]; BOARD_SIZE],
 }
 
 impl Board {
     pub fn new() -> Board {
-        Board { grid: [[0; BOARD_SIZE]; BOARD_SIZE] }
+        Board {
+            grid: [[0; BOARD_SIZE]; BOARD_SIZE],
+        }
     }
 }
 
@@ -39,7 +41,7 @@ fn add_blank_row(chars: &mut Vec<char>) {
 
 pub fn print_board(board: &Board) -> String {
     let mut chars = Vec::new();
-    
+
     add_ith_row(board, &mut chars, 0);
     add_ith_row(board, &mut chars, 1);
     add_ith_row(board, &mut chars, 2);
@@ -66,22 +68,23 @@ mod tests {
     #[test]
     fn test_given_ref_to_blank_board_should_print_board() {
         let expected = String::from(
-            "000|000|000\n\
-            000|000|000\n\
-            000|000|000\n\
-            --- --- ---\n\
+            "\
             000|000|000\n\
             000|000|000\n\
             000|000|000\n\
             --- --- ---\n\
             000|000|000\n\
             000|000|000\n\
-            000|000|000\n"
+            000|000|000\n\
+            --- --- ---\n\
+            000|000|000\n\
+            000|000|000\n\
+            000|000|000\n",
         );
         let board: Board = Board::new();
 
         let actual = print_board(&board);
-        
+
         assert_eq!(actual, expected);
     }
 }
