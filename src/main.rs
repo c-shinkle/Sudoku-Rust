@@ -1,16 +1,9 @@
-fn main() {
-    let expected = "\
-        123|456|789\n\
-        123|456|789\n\
-        123|456|789\n\
-        --- --- ---\n\
-        123|456|789\n\
-        123|456|789\n\
-        123|456|789\n\
-        --- --- ---\n\
-        123|456|789\n\
-        123|456|789\n\
-        123|456|789\n";
+mod board;
 
-    println!("{}", expected.len());
+fn main() {
+    let b = board::board_mod::Board::new();
+
+    let p = board::board_mod::print_board(&b);
+
+    println!("{}", p);
 }
