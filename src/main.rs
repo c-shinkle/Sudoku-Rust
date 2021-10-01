@@ -1,9 +1,9 @@
 mod board;
 
 fn main() {
-    let b = board::board_mod::Board::new();
+    let b = board::Board::new();
 
-    let p = board::board_mod::print_board(&b);
+    let p = board::print_board(&b);
 
     println!("{}", p);
 }
