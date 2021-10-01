@@ -3,13 +3,19 @@ pub mod board_mod {
     const BOARD_SIZE: usize = 9;
 
     pub struct Board {
-        grid: [[u8; BOARD_SIZE]; BOARD_SIZE],
+        pub grid: [[u8; BOARD_SIZE]; BOARD_SIZE],
     }
 
     impl Board {
         pub fn new() -> Board {
             Board {
                 grid: [[0; BOARD_SIZE]; BOARD_SIZE],
+            }
+        }
+
+        pub fn from(grid: [[u8; BOARD_SIZE]; BOARD_SIZE]) -> Board {
+            Board {
+                grid,
             }
         }
 
@@ -62,7 +68,7 @@ mod tests {
     use super::board_mod::Board;
 
     #[test]
-    fn test_given_ref_to_blank_board_should_print_board() {
+    fn given_ref_to_blank_board_should_print_board() {
         let expected = String::from(
             "\
             000|000|000\n\
@@ -82,5 +88,26 @@ mod tests {
         let actual = board.print_board();
 
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn given_grid_should_build_board_from_it() {
+        let expected = [
+            [1,2,3,4,5,6,7,8,9],
+            [1,2,3,4,5,6,7,8,9],
+            [1,2,3,4,5,6,7,8,9],
+            
+            [1,2,3,4,5,6,7,8,9],
+            [1,2,3,4,5,6,7,8,9],
+            [1,2,3,4,5,6,7,8,9],
+            
+            [1,2,3,4,5,6,7,8,9],
+            [1,2,3,4,5,6,7,8,9],
+            [1,2,3,4,5,6,7,8,9],
+        ];
+
+        let actual = Board::from(expected);
+
+        assert_eq!(actual.grid, expected);
     }
 }
