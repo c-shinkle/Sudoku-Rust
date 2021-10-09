@@ -28,21 +28,16 @@ pub mod board_mod {
             }
         }
 
-        pub fn from(from_grid: [[u8; BOARD_SIZE]; BOARD_SIZE]) -> Board {
-            let mut grid: [[Cell; BOARD_SIZE]; BOARD_SIZE] = [[Cell {
-                val: 0,
-                poss: [false; BOARD_SIZE],
-            }; BOARD_SIZE];
-                BOARD_SIZE];
-            for i in 0..BOARD_SIZE {
-                for j in 0..BOARD_SIZE {
-                    grid[i][j] = Cell {
-                        val: from_grid[i][j],
+        pub fn set_board_string(&mut self, values: &String) {
+            let mut chars = values.chars();
+            for row in 0..BOARD_SIZE {
+                for col in 0..BOARD_SIZE {
+                    self.grid[row][col] = Cell {
+                        val: chars.next().unwrap_or('0') as u8 - '0' as u8,
                         poss: [false; BOARD_SIZE],
-                    }
+                    };
                 }
             }
-            Board { grid }
         }
 
         pub fn print_board(self) -> String {
@@ -91,8 +86,7 @@ pub mod board_mod {
 
 #[cfg(test)]
 mod tests {
-    use super::board_mod;
-    use board_mod::*;
+    use super::board_mod::*;
 
     #[test]
     fn given_ref_to_blank_board_should_print_board() {
@@ -118,7 +112,7 @@ mod tests {
     }
 
     #[test]
-    fn given_grid_should_build_board_from_it() {
+    fn given_string_should_set_board() {
         let poss = [false; BOARD_SIZE];
         let row = [
             Cell { val: 1, poss },
@@ -131,23 +125,70 @@ mod tests {
             Cell { val: 8, poss },
             Cell { val: 9, poss },
         ];
-        #[rustfmt::skip]
-        let given = [
-            [1,2,3, 4,5,6, 7,8,9],
-            [1,2,3, 4,5,6, 7,8,9],
-            [1,2,3, 4,5,6, 7,8,9],
-     
-            [1,2,3, 4,5,6, 7,8,9],
-            [1,2,3, 4,5,6, 7,8,9],
-            [1,2,3, 4,5,6, 7,8,9],
-     
-            [1,2,3, 4,5,6, 7,8,9],
-            [1,2,3, 4,5,6, 7,8,9],
-            [1,2,3, 4,5,6, 7,8,9],
-        ];
-        let expected = [row, row, row, row, row, row, row, row, row];
+        let expected = [row; BOARD_SIZE];
 
-        let actual = Board::from(given);
+        let given = String::from(
+            "\
+            123456789\
+            123456789\
+            123456789\
+            123456789\
+            123456789\
+            123456789\
+            123456789\
+            123456789\
+            123456789\
+            ",
+        );
+
+        let mut actual = Board::new();
+        actual.set_board_string(&given);
+
+        assert_eq!(actual.grid, expected);
+    }
+
+    #[test]
+    fn given_string_too_short_should_set_board_with_0s() {
+        let poss = [false; BOARD_SIZE];
+        let row = [
+            Cell { val: 1, poss },
+            Cell { val: 2, poss },
+            Cell { val: 3, poss },
+            Cell { val: 4, poss },
+            Cell { val: 5, poss },
+            Cell { val: 6, poss },
+            Cell { val: 7, poss },
+            Cell { val: 8, poss },
+            Cell { val: 9, poss },
+        ];
+        let blank_row = [
+            Cell { val: 0, poss },
+            Cell { val: 0, poss },
+            Cell { val: 0, poss },
+            Cell { val: 0, poss },
+            Cell { val: 0, poss },
+            Cell { val: 0, poss },
+            Cell { val: 0, poss },
+            Cell { val: 0, poss },
+            Cell { val: 0, poss },
+        ];
+        let expected = [row, row, row, row, row, row, row, row, blank_row];
+
+        let given = String::from(
+            "\
+                123456789\
+                123456789\
+                123456789\
+                123456789\
+                123456789\
+                123456789\
+                123456789\
+                123456789\
+                ",
+        );
+
+        let mut actual = Board::new();
+        actual.set_board_string(&given);
 
         assert_eq!(actual.grid, expected);
     }
