@@ -1,4 +1,7 @@
 pub mod board_mod {
+    use std::fs::File;
+    use std::io;
+    use std::io::{BufRead, BufReader};
 
     pub const BOARD_SIZE: usize = 9;
 
@@ -40,7 +43,7 @@ pub mod board_mod {
             }
         }
 
-        pub fn print_board(self) -> String {
+        pub fn print_board(&self) -> String {
             let mut chars = String::with_capacity(132);
 
             Board::add_ith_row(self.grid[0], &mut chars);
@@ -80,6 +83,20 @@ pub mod board_mod {
             chars.push((row[8].val + 48) as char);
 
             chars.push('\n');
+        }
+
+        pub fn set_board_file(&mut self, filename: &str) -> io::Result<()> {
+            let file = File::open(filename)?;
+            let reader = BufReader::new(file);
+            let mut values = String::with_capacity(BOARD_SIZE * BOARD_SIZE);
+
+            for line in reader.lines() {
+                let line: String = line?;
+                values.push_str(&line[0..BOARD_SIZE]);
+            }
+
+            self.set_board_string(&values);
+            io::Result::Ok(())
         }
     }
 }
@@ -190,6 +207,31 @@ mod tests {
         let mut actual = Board::new();
         actual.set_board_string(&given);
 
+        assert_eq!(actual.grid, expected);
+    }
+
+    #[test]
+    fn given_file_name_should_set_board() {
+        let given = "given_file_name_should_set_board.txt";
+
+        let poss = [false; BOARD_SIZE];
+        let row = [
+            Cell { val: 1, poss },
+            Cell { val: 2, poss },
+            Cell { val: 3, poss },
+            Cell { val: 4, poss },
+            Cell { val: 5, poss },
+            Cell { val: 6, poss },
+            Cell { val: 7, poss },
+            Cell { val: 8, poss },
+            Cell { val: 9, poss },
+        ];
+        let expected = [row; BOARD_SIZE];
+
+        let mut actual = Board::new();
+        let result = actual.set_board_file(&given);
+
+        assert_eq!(result.is_ok(), true);
         assert_eq!(actual.grid, expected);
     }
 }
