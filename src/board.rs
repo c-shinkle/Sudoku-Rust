@@ -1,7 +1,4 @@
 pub mod board {
-    use std::fs::File;
-    use std::io;
-    use std::io::{BufRead, BufReader};
 
     pub const BOARD_SIZE: usize = 9;
 
@@ -81,19 +78,6 @@ pub mod board {
             chars.push((row[8].val + 48) as char);
 
             chars.push('\n');
-        }
-
-        pub fn set_board_file(&mut self, filename: &str) -> io::Result<()> {
-            let file = File::open(filename)?;
-            let reader = BufReader::new(file);
-            let mut values = String::with_capacity(BOARD_SIZE * BOARD_SIZE);
-
-            for line in reader.lines() {
-                values.push_str(&line?[0..BOARD_SIZE]);
-            }
-
-            self.set_board_string(&values);
-            io::Result::Ok(())
         }
     }
 }
