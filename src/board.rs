@@ -187,29 +187,4 @@ mod tests {
 
         assert_eq!(actual.grid, expected);
     }
-
-    #[test]
-    fn given_file_name_should_set_board() {
-        let given = "given_file_name_should_set_board.txt";
-
-        let poss = [true; BOARD_SIZE];
-        let row = [
-            Cell { val: 1, poss },
-            Cell { val: 2, poss },
-            Cell { val: 3, poss },
-            Cell { val: 4, poss },
-            Cell { val: 5, poss },
-            Cell { val: 6, poss },
-            Cell { val: 7, poss },
-            Cell { val: 8, poss },
-            Cell { val: 9, poss },
-        ];
-        let expected = [row; BOARD_SIZE];
-
-        let mut actual = Board::new();
-        let result = actual.set_board_file(&given);
-
-        assert_eq!(result.is_ok(), true);
-        assert_eq!(actual.grid, expected);
-    }
 }
