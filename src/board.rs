@@ -1,4 +1,4 @@
-pub mod board_mod {
+pub mod board {
     use std::fs::File;
     use std::io;
     use std::io::{BufRead, BufReader};
@@ -17,6 +17,7 @@ pub mod board_mod {
         }
     }
 
+    #[derive(Clone, Debug)]
     pub struct Board {
         pub grid: [[Cell; BOARD_SIZE]; BOARD_SIZE],
     }
@@ -26,19 +27,16 @@ pub mod board_mod {
             Board {
                 grid: [[Cell {
                     val: 0,
-                    poss: [false; BOARD_SIZE],
+                    poss: [true; BOARD_SIZE],
                 }; BOARD_SIZE]; BOARD_SIZE],
             }
         }
 
-        pub fn set_board_string(&mut self, values: &String) {
+        pub fn set_board_string(&mut self, values: &str) {
             let mut chars = values.chars();
             for row in 0..BOARD_SIZE {
                 for col in 0..BOARD_SIZE {
-                    self.grid[row][col] = Cell {
-                        val: chars.next().unwrap_or('0') as u8 - '0' as u8,
-                        poss: [false; BOARD_SIZE],
-                    };
+                    self.grid[row][col].val = chars.next().unwrap_or('0') as u8 - '0' as u8;
                 }
             }
         }
@@ -91,8 +89,7 @@ pub mod board_mod {
             let mut values = String::with_capacity(BOARD_SIZE * BOARD_SIZE);
 
             for line in reader.lines() {
-                let line: String = line?;
-                values.push_str(&line[0..BOARD_SIZE]);
+                values.push_str(&line?[0..BOARD_SIZE]);
             }
 
             self.set_board_string(&values);
@@ -103,7 +100,7 @@ pub mod board_mod {
 
 #[cfg(test)]
 mod tests {
-    use super::board_mod::*;
+    use super::board::*;
 
     #[test]
     fn given_ref_to_blank_board_should_print_board() {
@@ -119,7 +116,8 @@ mod tests {
             --- --- ---\n\
             000|000|000\n\
             000|000|000\n\
-            000|000|000\n",
+            000|000|000\n\
+        ",
         );
         let board = Board::new();
 
@@ -130,7 +128,7 @@ mod tests {
 
     #[test]
     fn given_string_should_set_board() {
-        let poss = [false; BOARD_SIZE];
+        let poss = [true; BOARD_SIZE];
         let row = [
             Cell { val: 1, poss },
             Cell { val: 2, poss },
@@ -144,8 +142,7 @@ mod tests {
         ];
         let expected = [row; BOARD_SIZE];
 
-        let given = String::from(
-            "\
+        let given = "\
             123456789\
             123456789\
             123456789\
@@ -155,8 +152,7 @@ mod tests {
             123456789\
             123456789\
             123456789\
-            ",
-        );
+        ";
 
         let mut actual = Board::new();
         actual.set_board_string(&given);
@@ -166,7 +162,7 @@ mod tests {
 
     #[test]
     fn given_string_too_short_should_set_board_with_0s() {
-        let poss = [false; BOARD_SIZE];
+        let poss = [true; BOARD_SIZE];
         let row = [
             Cell { val: 1, poss },
             Cell { val: 2, poss },
@@ -191,18 +187,16 @@ mod tests {
         ];
         let expected = [row, row, row, row, row, row, row, row, blank_row];
 
-        let given = String::from(
-            "\
-                123456789\
-                123456789\
-                123456789\
-                123456789\
-                123456789\
-                123456789\
-                123456789\
-                123456789\
-                ",
-        );
+        let given = "\
+            123456789\
+            123456789\
+            123456789\
+            123456789\
+            123456789\
+            123456789\
+            123456789\
+            123456789\
+        ";
 
         let mut actual = Board::new();
         actual.set_board_string(&given);
@@ -214,7 +208,7 @@ mod tests {
     fn given_file_name_should_set_board() {
         let given = "given_file_name_should_set_board.txt";
 
-        let poss = [false; BOARD_SIZE];
+        let poss = [true; BOARD_SIZE];
         let row = [
             Cell { val: 1, poss },
             Cell { val: 2, poss },
