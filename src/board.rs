@@ -107,7 +107,7 @@ mod tests {
 
         let actual = board.print_board();
 
-        assert_eq!(actual, expected);
+        assert_eq!(expected, actual);
     }
 
     #[test]
@@ -141,7 +141,7 @@ mod tests {
         let mut actual = Board::new();
         actual.set_board_string(&given);
 
-        assert_eq!(actual.grid, expected);
+        assert_eq!(expected, actual.grid);
     }
 
     #[test]
@@ -185,6 +185,6 @@ mod tests {
         let mut actual = Board::new();
         actual.set_board_string(&given);
 
-        assert_eq!(actual.grid, expected);
+        assert_eq!(expected, actual.grid);
     }
 }

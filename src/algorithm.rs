@@ -105,10 +105,11 @@ mod tests {
         ",
         );
 
-        naive(&mut given);
+        let actual_error = naive(&mut given);
+        let actual_print_board = given.print_board();
 
-        // assert_eq!(true, actual);
-        assert_eq!(expected.print_board(), given.print_board());
+        assert_eq!(false, actual_error);
+        assert_eq!(expected.print_board(), actual_print_board);
     }
 
     #[test]
