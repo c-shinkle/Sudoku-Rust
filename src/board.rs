@@ -2,16 +2,10 @@ pub mod board {
 
     pub const BOARD_SIZE: usize = 9;
 
-    #[derive(Copy, Clone, Debug)]
+    #[derive(Copy, Clone, Debug, PartialEq)]
     pub struct Cell {
         pub val: u8,
         pub poss: [bool; BOARD_SIZE],
-    }
-
-    impl PartialEq for Cell {
-        fn eq(&self, other: &Cell) -> bool {
-            self.val == other.val && self.poss == other.poss
-        }
     }
 
     #[derive(Clone, Debug)]
