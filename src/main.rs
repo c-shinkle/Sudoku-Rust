@@ -1,7 +1,7 @@
 mod algorithm;
 mod board;
-use algorithm::algorithm::naive;
-use board::board::*;
+use algorithm::naive;
+use board::Board;
 
 fn main() {
     let expected_string = "\

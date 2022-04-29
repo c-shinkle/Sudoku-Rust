@@ -1,84 +1,81 @@
-pub mod board {
+pub const BOARD_SIZE: usize = 9;
 
-    pub const BOARD_SIZE: usize = 9;
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Cell {
+    pub val: u8,
+    pub poss: [bool; BOARD_SIZE],
+}
 
-    #[derive(Copy, Clone, Debug, PartialEq)]
-    pub struct Cell {
-        pub val: u8,
-        pub poss: [bool; BOARD_SIZE],
+#[derive(Clone, Debug)]
+pub struct Board {
+    pub grid: [[Cell; BOARD_SIZE]; BOARD_SIZE],
+}
+
+impl Board {
+    pub fn new() -> Board {
+        Board {
+            grid: [[Cell {
+                val: 0,
+                poss: [true; BOARD_SIZE],
+            }; BOARD_SIZE]; BOARD_SIZE],
+        }
     }
 
-    #[derive(Clone, Debug)]
-    pub struct Board {
-        pub grid: [[Cell; BOARD_SIZE]; BOARD_SIZE],
+    pub fn set_board_string(&mut self, values: &str) {
+        let mut chars = values.chars();
+        for row in 0..BOARD_SIZE {
+            for col in 0..BOARD_SIZE {
+                self.grid[row][col].val = chars.next().unwrap_or('0') as u8 - b'0';
+            }
+        }
     }
 
-    impl Board {
-        pub fn new() -> Board {
-            Board {
-                grid: [[Cell {
-                    val: 0,
-                    poss: [true; BOARD_SIZE],
-                }; BOARD_SIZE]; BOARD_SIZE],
-            }
-        }
+    pub fn print_board(&self) -> String {
+        let mut chars = String::with_capacity(132);
 
-        pub fn set_board_string(&mut self, values: &str) {
-            let mut chars = values.chars();
-            for row in 0..BOARD_SIZE {
-                for col in 0..BOARD_SIZE {
-                    self.grid[row][col].val = chars.next().unwrap_or('0') as u8 - '0' as u8;
-                }
-            }
-        }
+        Board::add_ith_row(self.grid[0], &mut chars);
+        Board::add_ith_row(self.grid[1], &mut chars);
+        Board::add_ith_row(self.grid[2], &mut chars);
 
-        pub fn print_board(&self) -> String {
-            let mut chars = String::with_capacity(132);
+        chars.push_str("--- --- ---\n");
 
-            Board::add_ith_row(self.grid[0], &mut chars);
-            Board::add_ith_row(self.grid[1], &mut chars);
-            Board::add_ith_row(self.grid[2], &mut chars);
+        Board::add_ith_row(self.grid[3], &mut chars);
+        Board::add_ith_row(self.grid[4], &mut chars);
+        Board::add_ith_row(self.grid[5], &mut chars);
 
-            chars.push_str("--- --- ---\n");
+        chars.push_str("--- --- ---\n");
 
-            Board::add_ith_row(self.grid[3], &mut chars);
-            Board::add_ith_row(self.grid[4], &mut chars);
-            Board::add_ith_row(self.grid[5], &mut chars);
+        Board::add_ith_row(self.grid[6], &mut chars);
+        Board::add_ith_row(self.grid[7], &mut chars);
+        Board::add_ith_row(self.grid[8], &mut chars);
 
-            chars.push_str("--- --- ---\n");
+        chars
+    }
 
-            Board::add_ith_row(self.grid[6], &mut chars);
-            Board::add_ith_row(self.grid[7], &mut chars);
-            Board::add_ith_row(self.grid[8], &mut chars);
+    fn add_ith_row(row: [Cell; 9], chars: &mut String) {
+        chars.push((row[0].val + 48) as char);
+        chars.push((row[1].val + 48) as char);
+        chars.push((row[2].val + 48) as char);
 
-            chars
-        }
+        chars.push('|');
 
-        fn add_ith_row(row: [Cell; 9], chars: &mut String) {
-            chars.push((row[0].val + 48) as char);
-            chars.push((row[1].val + 48) as char);
-            chars.push((row[2].val + 48) as char);
+        chars.push((row[3].val + 48) as char);
+        chars.push((row[4].val + 48) as char);
+        chars.push((row[5].val + 48) as char);
 
-            chars.push('|');
+        chars.push('|');
 
-            chars.push((row[3].val + 48) as char);
-            chars.push((row[4].val + 48) as char);
-            chars.push((row[5].val + 48) as char);
+        chars.push((row[6].val + 48) as char);
+        chars.push((row[7].val + 48) as char);
+        chars.push((row[8].val + 48) as char);
 
-            chars.push('|');
-
-            chars.push((row[6].val + 48) as char);
-            chars.push((row[7].val + 48) as char);
-            chars.push((row[8].val + 48) as char);
-
-            chars.push('\n');
-        }
+        chars.push('\n');
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::board::*;
+    use super::*;
 
     #[test]
     fn given_ref_to_blank_board_should_print_board() {

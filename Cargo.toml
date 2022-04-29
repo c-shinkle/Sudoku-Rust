@@ -2,8 +2,4 @@
 name = "sudoku-rust"
 version = "0.1.0"
 authors = ["Christian Shinkle <cshinkle2018@gmail.com>"]
-edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
+edition = "2021"
