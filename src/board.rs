@@ -1,3 +1,6 @@
+use std::fs::File;
+use std::io::{BufRead, BufReader, Error, ErrorKind, Result};
+
 pub const BOARD_SIZE: usize = 9;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -30,6 +33,20 @@ impl Board {
                 self.grid[row][col].val = chars.next().expect(TOO_FEW_CHARS) as u8 - b'0';
             }
         }
+    }
+
+    pub fn set_board_file(&mut self, path: &str) -> Result<()> {
+        let file = File::open(path)?;
+        let mut reader = BufReader::new(file);
+        let mut buffer = String::with_capacity(BOARD_SIZE + 1);
+        let mut values = String::with_capacity(BOARD_SIZE * BOARD_SIZE);
+        for _ in 0..BOARD_SIZE {
+            reader.read_line(&mut buffer)?;
+            values.push_str(&buffer[0..BOARD_SIZE]);
+            buffer.clear();
+        }
+        self.set_board_string(values.as_str());
+        Ok(())
     }
 
     pub fn print_board(&self) -> String {
@@ -86,8 +103,9 @@ mod tests {
         //when
         let actual = board.print_board();
         //then
-        assert_eq!(String::from(
-            "\
+        assert_eq!(
+            String::from(
+                "\
             000|000|000\n\
             000|000|000\n\
             000|000|000\n\
@@ -98,9 +116,10 @@ mod tests {
             --- --- ---\n\
             000|000|000\n\
             000|000|000\n\
-            000|000|000\n\
-        ",
-        ), actual);
+            000|000|000\n"
+            ),
+            actual
+        );
     }
 
     #[test]
@@ -122,7 +141,7 @@ mod tests {
         actual.set_board_string(&given);
         //then
         let poss = [true; BOARD_SIZE];
-        assert_eq!([[
+        let expected = [[
             Cell { val: 1, poss },
             Cell { val: 2, poss },
             Cell { val: 3, poss },
@@ -132,7 +151,8 @@ mod tests {
             Cell { val: 7, poss },
             Cell { val: 8, poss },
             Cell { val: 9, poss },
-        ]; BOARD_SIZE], actual.grid);
+        ]; BOARD_SIZE];
+        assert_eq!(expected, actual.grid);
     }
 
     #[test]
@@ -152,5 +172,39 @@ mod tests {
         //when
         Board::new().set_board_string(&given);
         //then
+    }
+
+    #[test]
+    fn given_path_should_set_board() {
+        //given
+        let path = "./res/given_path_should_set_board.txt";
+        let mut actual = Board::new();
+        //when
+        let result = actual.set_board_file(path);
+        println!("{:?}", result);
+        //then
+        assert_eq!(result.is_ok(), true);
+        let poss = [true; BOARD_SIZE];
+        let expected = [[
+            Cell { val: 1, poss },
+            Cell { val: 2, poss },
+            Cell { val: 3, poss },
+            Cell { val: 4, poss },
+            Cell { val: 5, poss },
+            Cell { val: 6, poss },
+            Cell { val: 7, poss },
+            Cell { val: 8, poss },
+            Cell { val: 9, poss },
+        ]; BOARD_SIZE];
+        assert_eq!(expected, actual.grid);
+    }
+
+    #[test]
+    fn given_bad_path_should_return_error() {
+        //given
+        //when
+        let actual = Board::new().set_board_file("./bad/path");
+        //then
+        assert_eq!(actual.is_err(), true);
     }
 }
