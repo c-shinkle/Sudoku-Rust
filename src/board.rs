@@ -11,6 +11,8 @@ pub struct Board {
     pub grid: [[Cell; BOARD_SIZE]; BOARD_SIZE],
 }
 
+const TOO_FEW_CHARS: &str = "Should be exactly 81 chars in string slice.";
+
 impl Board {
     pub fn new() -> Board {
         Board {
@@ -25,7 +27,7 @@ impl Board {
         let mut chars = values.chars();
         for row in 0..BOARD_SIZE {
             for col in 0..BOARD_SIZE {
-                self.grid[row][col].val = chars.next().unwrap_or('0') as u8 - b'0';
+                self.grid[row][col].val = chars.next().expect(TOO_FEW_CHARS) as u8 - b'0';
             }
         }
     }
@@ -79,7 +81,12 @@ mod tests {
 
     #[test]
     fn given_ref_to_blank_board_should_print_board() {
-        let expected = String::from(
+        //given
+        let board = Board::new();
+        //when
+        let actual = board.print_board();
+        //then
+        assert_eq!(String::from(
             "\
             000|000|000\n\
             000|000|000\n\
@@ -93,30 +100,12 @@ mod tests {
             000|000|000\n\
             000|000|000\n\
         ",
-        );
-        let board = Board::new();
-
-        let actual = board.print_board();
-
-        assert_eq!(expected, actual);
+        ), actual);
     }
 
     #[test]
     fn given_string_should_set_board() {
-        let poss = [true; BOARD_SIZE];
-        let row = [
-            Cell { val: 1, poss },
-            Cell { val: 2, poss },
-            Cell { val: 3, poss },
-            Cell { val: 4, poss },
-            Cell { val: 5, poss },
-            Cell { val: 6, poss },
-            Cell { val: 7, poss },
-            Cell { val: 8, poss },
-            Cell { val: 9, poss },
-        ];
-        let expected = [row; BOARD_SIZE];
-
+        //given
         let given = "\
             123456789\
             123456789\
@@ -128,40 +117,28 @@ mod tests {
             123456789\
             123456789\
         ";
-
+        //when
         let mut actual = Board::new();
         actual.set_board_string(&given);
-
-        assert_eq!(expected, actual.grid);
+        //then
+        let poss = [true; BOARD_SIZE];
+        assert_eq!([[
+            Cell { val: 1, poss },
+            Cell { val: 2, poss },
+            Cell { val: 3, poss },
+            Cell { val: 4, poss },
+            Cell { val: 5, poss },
+            Cell { val: 6, poss },
+            Cell { val: 7, poss },
+            Cell { val: 8, poss },
+            Cell { val: 9, poss },
+        ]; BOARD_SIZE], actual.grid);
     }
 
     #[test]
-    fn given_string_too_short_should_set_board_with_0s() {
-        let poss = [true; BOARD_SIZE];
-        let row = [
-            Cell { val: 1, poss },
-            Cell { val: 2, poss },
-            Cell { val: 3, poss },
-            Cell { val: 4, poss },
-            Cell { val: 5, poss },
-            Cell { val: 6, poss },
-            Cell { val: 7, poss },
-            Cell { val: 8, poss },
-            Cell { val: 9, poss },
-        ];
-        let blank_row = [
-            Cell { val: 0, poss },
-            Cell { val: 0, poss },
-            Cell { val: 0, poss },
-            Cell { val: 0, poss },
-            Cell { val: 0, poss },
-            Cell { val: 0, poss },
-            Cell { val: 0, poss },
-            Cell { val: 0, poss },
-            Cell { val: 0, poss },
-        ];
-        let expected = [row, row, row, row, row, row, row, row, blank_row];
-
+    #[should_panic(expected = "Should be exactly 81 chars in string slice.")]
+    fn given_string_too_short_should_panic_with_message() {
+        //given
         let given = "\
             123456789\
             123456789\
@@ -172,10 +149,8 @@ mod tests {
             123456789\
             123456789\
         ";
-
-        let mut actual = Board::new();
-        actual.set_board_string(&given);
-
-        assert_eq!(expected, actual.grid);
+        //when
+        Board::new().set_board_string(&given);
+        //then
     }
 }

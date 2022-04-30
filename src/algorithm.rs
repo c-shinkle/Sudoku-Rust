@@ -1,4 +1,4 @@
-use crate::board::*;
+use crate::board::{Board, BOARD_SIZE};
 
 pub fn naive(board: &mut Board) -> bool {
     populate_possible_values(board);
