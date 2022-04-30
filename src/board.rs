@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{BufRead, BufReader, Error, ErrorKind, Result};
+use std::io::{BufRead, BufReader, Result};
 
 pub const BOARD_SIZE: usize = 9;
 
@@ -99,13 +99,12 @@ mod tests {
     #[test]
     fn given_ref_to_blank_board_should_print_board() {
         //given
-        let board = Board::new();
+        let given = Board::new();
         //when
-        let actual = board.print_board();
+        let actual = given.print_board();
         //then
-        assert_eq!(
-            String::from(
-                "\
+        let expected = String::from(
+            "\
             000|000|000\n\
             000|000|000\n\
             000|000|000\n\
@@ -116,10 +115,9 @@ mod tests {
             --- --- ---\n\
             000|000|000\n\
             000|000|000\n\
-            000|000|000\n"
-            ),
-            actual
+            000|000|000\n",
         );
+        assert_eq!(expected, actual);
     }
 
     #[test]
@@ -170,7 +168,7 @@ mod tests {
             123456789\
         ";
         //when
-        Board::new().set_board_string(&given);
+        Board::new().set_board_string(given);
         //then
     }
 
@@ -181,9 +179,8 @@ mod tests {
         let mut actual = Board::new();
         //when
         let result = actual.set_board_file(path);
-        println!("{:?}", result);
         //then
-        assert_eq!(result.is_ok(), true);
+        assert!(result.is_ok());
         let poss = [true; BOARD_SIZE];
         let expected = [[
             Cell { val: 1, poss },
@@ -205,6 +202,6 @@ mod tests {
         //when
         let actual = Board::new().set_board_file("./bad/path");
         //then
-        assert_eq!(actual.is_err(), true);
+        assert!(actual.is_err());
     }
 }
