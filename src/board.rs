@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Result};
 
 pub const BOARD_SIZE: usize = 9;
+const TOO_FEW_CHARS: &str = "Should be exactly 81 chars in string slice.";
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Cell {
@@ -9,12 +10,17 @@ pub struct Cell {
     pub poss: [bool; BOARD_SIZE],
 }
 
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Debug)]
 pub struct Board {
     pub grid: [[Cell; BOARD_SIZE]; BOARD_SIZE],
 }
 
-const TOO_FEW_CHARS: &str = "Should be exactly 81 chars in string slice.";
+impl Cell {
+    #[inline]
+    pub fn is_blank(&self) -> bool {
+        self.val == 0
+    }
+}
 
 impl Board {
     pub fn new() -> Board {
