@@ -1,7 +1,7 @@
-mod algorithm;
 mod board;
-use algorithm::naive;
-use board::Board;
+use board::board_mod::Board;
+mod algorithm;
+use algorithm::algorithm_mod::naive;
 
 fn main() {
     let mut given = Board::new();

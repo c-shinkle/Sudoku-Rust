@@ -1,63 +1,62 @@
-use std::thread::sleep;
-use std::time::Duration;
-use crate::board::{Board, BOARD_SIZE};
+pub mod algorithm_mod {
+    use crate::board::board_mod::{Board, BOARD_SIZE};
 
-pub fn naive(board: &mut Board) -> Option<Board> {
-    sleep(Duration::from_millis(20));
-    populate_possible_values(board);
-    //then recursively guess and check all blank cells
-    for row in 0..BOARD_SIZE {
-        for col in 0..BOARD_SIZE {
-            let cell = board.grid[row][col];
-            if cell.is_blank() {
-                //check each possibility until one works
-                for i in 1..=BOARD_SIZE {
-                    if cell.poss[i - 1] {
-                        let mut copied_board = board.clone();
-                        copied_board.grid[row][col].val = i as u8;
-                        let maybe_solved = naive(&mut copied_board);
-                        //Almost every call will return true
-                        if maybe_solved.is_some() {
-                            return maybe_solved;
+    pub fn naive(board: &mut Board) -> Option<Board> {
+        populate_possible_values(board);
+        //then recursively guess and check all blank cells
+        for row in 0..BOARD_SIZE {
+            for col in 0..BOARD_SIZE {
+                let cell = board.grid[row][col];
+                if cell.is_blank() {
+                    //check each possibility until one works
+                    for i in 1..=BOARD_SIZE {
+                        if cell.poss[i - 1] {
+                            let mut copied_board = board.clone();
+                            copied_board.grid[row][col].val = i as u8;
+                            let maybe_solved = naive(&mut copied_board);
+                            //Almost every call will return true
+                            if maybe_solved.is_some() {
+                                return maybe_solved;
+                            }
                         }
                     }
+                    return None;
                 }
-                return None;
             }
         }
+        Some(*board)
     }
-    Some(*board)
-}
 
-fn populate_possible_values(board: &mut Board) {
-    for row in 0..BOARD_SIZE {
-        for col in 0..BOARD_SIZE {
-            //check row
-            for i in 0..BOARD_SIZE {
-                let val = board.grid[row][i].val;
-                if val != 0 {
-                    let val_index = (val - 1) as usize;
-                    board.grid[row][col].poss[val_index] = false;
+    pub fn populate_possible_values(board: &mut Board) {
+        for row in 0..BOARD_SIZE {
+            for col in 0..BOARD_SIZE {
+                //check row
+                for i in 0..BOARD_SIZE {
+                    let val = board.grid[row][i].val;
+                    if val != 0 {
+                        let val_index = (val - 1) as usize;
+                        board.grid[row][col].poss[val_index] = false;
+                    }
                 }
-            }
-            //check col
-            for i in 0..BOARD_SIZE {
-                let val = board.grid[i][col].val;
-                if val != 0 {
-                    let val_index = (val - 1) as usize;
-                    board.grid[row][col].poss[val_index] = false;
+                //check col
+                for i in 0..BOARD_SIZE {
+                    let val = board.grid[i][col].val;
+                    if val != 0 {
+                        let val_index = (val - 1) as usize;
+                        board.grid[row][col].poss[val_index] = false;
+                    }
                 }
-            }
-            //check box
-            let box_row = row / 3;
-            let box_col = col / 3;
-            for i in 0..BOARD_SIZE {
-                let grid_row = box_row * 3 + (i / 3);
-                let grid_col = box_col * 3 + (i % 3);
-                let val = board.grid[grid_row][grid_col].val;
-                if val != 0 {
-                    let val_index = (val - 1) as usize;
-                    board.grid[row][col].poss[val_index] = false;
+                //check box
+                let box_row = row / 3;
+                let box_col = col / 3;
+                for i in 0..BOARD_SIZE {
+                    let grid_row = box_row * 3 + (i / 3);
+                    let grid_col = box_col * 3 + (i % 3);
+                    let val = board.grid[grid_row][grid_col].val;
+                    if val != 0 {
+                        let val_index = (val - 1) as usize;
+                        board.grid[row][col].poss[val_index] = false;
+                    }
                 }
             }
         }
@@ -66,7 +65,8 @@ fn populate_possible_values(board: &mut Board) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::board::board_mod::Board;
+    use super::algorithm_mod::*;
 
     #[test]
     fn given_valid_board_should_solve_board() {
