@@ -3,3 +3,7 @@ name = "sudoku_rust"
 version = "0.1.0"
 authors = ["Christian Shinkle <cshinkle2018@gmail.com>"]
 edition = "2021"
+
+[profile.release]
+debug = true
+lto = true
