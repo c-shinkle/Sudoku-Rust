@@ -1,2 +1,2 @@
 pub mod board;
-pub mod algorithm;
+pub mod naive;

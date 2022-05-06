@@ -4,12 +4,12 @@ extern crate test;
 
 #[cfg(test)]
 mod tests {
+    use sudoku_rust::board::Board;
+    use sudoku_rust::naive::naive;
     use test::Bencher;
-    use sudoku_rust::board::board_mod::Board;
-    use sudoku_rust::algorithm::algorithm_mod::naive;
 
     #[bench]
-    fn solve_hard_sudoku(b: &mut Bencher) {
+    fn naive_hard_sudoku(b: &mut Bencher) {
         let mut given = Board::new();
         let result = given.set_board_file("./res/bench.txt");
         if result.is_err() {
@@ -26,4 +26,3 @@ mod tests {
         }
     }
 }
-
