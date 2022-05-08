@@ -15,7 +15,7 @@ mod tests {
         if result.is_err() {
             panic!("No file!")
         }
-        let mut maybe_solved: Option<Board> = None;
+        let mut maybe_solved: Option<Board> = Option::default();
 
         b.iter(|| {
             maybe_solved = naive(&mut given);

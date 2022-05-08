@@ -102,6 +102,40 @@ impl Board {
 
         chars.push('\n');
     }
+
+    pub fn set_all_poss(&mut self) {
+        for row in 0..BOARD_SIZE {
+            for col in 0..BOARD_SIZE {
+                //check row
+                for i in 0..BOARD_SIZE {
+                    let val = self.grid[row][i].val;
+                    if val != 0 {
+                        let val_index = (val - 1) as usize;
+                        self.grid[row][col].poss[val_index] = false;
+                    }
+                }
+                //check col
+                for i in 0..BOARD_SIZE {
+                    let val = self.grid[i][col].val;
+                    if val != 0 {
+                        let val_index = (val - 1) as usize;
+                        self.grid[row][col].poss[val_index] = false;
+                    }
+                }
+                //check box
+                let box_row = row / 3;
+                let box_col = col / 3;
+                for i in 0..BOARD_SIZE {
+                    let grid_row = box_row * 3 + (i / 3);
+                    let grid_col = box_col * 3 + (i % 3);
+                    let val = self.grid[grid_row][grid_col].val;
+                    if val != 0 {
+                        self.grid[row][col].poss[(val - 1) as usize] = false;
+                    }
+                }
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -215,5 +249,30 @@ mod tests {
         let actual = Board::new().set_board_file("./bad/path");
         //then
         assert!(actual.is_err());
+    }
+
+    #[test]
+    fn given_valid_board_should_set_poss() {
+        //given
+        let mut given = Board::new();
+        given.set_board_string(
+            "\
+            003174258\
+            178325649\
+            254689731\
+            821437596\
+            496852317\
+            735961824\
+            589713462\
+            317246985\
+            042598173\
+        ",
+        );
+        //when
+        given.set_all_poss();
+        //then
+        let actual = given.grid[0][0].poss;
+        let expected = [false, false, false, false, false, true, false, false, true];
+        assert_eq!(expected, actual);
     }
 }
