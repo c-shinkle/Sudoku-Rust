@@ -4,10 +4,10 @@ pub fn naive(board: &mut Board) -> Option<Board> {
     board.set_all_poss();
     let maybe_cell = find_blank_cell(board);
     if let Some((row, col, cell)) = maybe_cell {
-        for i in 1..=BOARD_SIZE {
-            if cell.poss[i - 1] {
+        for i in 0..BOARD_SIZE {
+            if cell.poss[i] {
                 let mut copied_board = *board;
-                copied_board.grid[row][col].val = i as u8;
+                copied_board.grid[row][col].val = i as u8 + 1;
                 let maybe_solved = naive(&mut copied_board);
                 if maybe_solved.is_some() {
                     return maybe_solved;
