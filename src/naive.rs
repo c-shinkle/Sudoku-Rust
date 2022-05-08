@@ -1,29 +1,35 @@
-use crate::board::{Board, BOARD_SIZE};
+use crate::board::{Board, BOARD_SIZE, Cell};
 
 pub fn naive(board: &mut Board) -> Option<Board> {
     board.set_all_poss();
-    //then recursively guess and check all blank cells
+    let maybe_cell = find_blank_cell(board);
+    if let Some((row, col, cell)) = maybe_cell {
+        for i in 1..=BOARD_SIZE {
+            if cell.poss[i - 1] {
+                let mut copied_board = *board;
+                copied_board.grid[row][col].val = i as u8;
+                let maybe_solved = naive(&mut copied_board);
+                if maybe_solved.is_some() {
+                    return maybe_solved;
+                }
+            }
+        }
+        None
+    } else {
+        Some(*board)
+    }
+}
+
+fn find_blank_cell(board: &Board) -> Option<(usize, usize, &Cell)> {
     for row in 0..BOARD_SIZE {
         for col in 0..BOARD_SIZE {
-            let cell = board.grid[row][col];
+            let cell = &board.grid[row][col];
             if cell.is_blank() {
-                //check each possibility until one works
-                for i in 1..=BOARD_SIZE {
-                    if cell.poss[i - 1] {
-                        let mut copied_board = *board;
-                        copied_board.grid[row][col].val = i as u8;
-                        let maybe_solved = naive(&mut copied_board);
-                        //Almost every call will return true
-                        if maybe_solved.is_some() {
-                            return maybe_solved;
-                        }
-                    }
-                }
-                return None;
+                return Some((row, col, cell));
             }
         }
     }
-    Some(*board)
+    None
 }
 
 #[cfg(test)]
