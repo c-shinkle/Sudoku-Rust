@@ -142,6 +142,46 @@ impl Board {
 mod tests {
     use super::*;
 
+    const SIMPLE_POSS: [bool; 9] = [true; BOARD_SIZE];
+    const SIMPLE_BOARD: [[Cell; 9]; 9] = [[
+        Cell {
+            val: 1,
+            poss: SIMPLE_POSS,
+        },
+        Cell {
+            val: 2,
+            poss: SIMPLE_POSS,
+        },
+        Cell {
+            val: 3,
+            poss: SIMPLE_POSS,
+        },
+        Cell {
+            val: 4,
+            poss: SIMPLE_POSS,
+        },
+        Cell {
+            val: 5,
+            poss: SIMPLE_POSS,
+        },
+        Cell {
+            val: 6,
+            poss: SIMPLE_POSS,
+        },
+        Cell {
+            val: 7,
+            poss: SIMPLE_POSS,
+        },
+        Cell {
+            val: 8,
+            poss: SIMPLE_POSS,
+        },
+        Cell {
+            val: 9,
+            poss: SIMPLE_POSS,
+        },
+    ]; BOARD_SIZE];
+
     #[test]
     fn given_ref_to_blank_board_should_print_board() {
         //given
@@ -183,20 +223,8 @@ mod tests {
         //when
         let mut actual = Board::new();
         actual.set_board_string(&given);
-        //then
-        let poss = [true; BOARD_SIZE];
-        let expected = [[
-            Cell { val: 1, poss },
-            Cell { val: 2, poss },
-            Cell { val: 3, poss },
-            Cell { val: 4, poss },
-            Cell { val: 5, poss },
-            Cell { val: 6, poss },
-            Cell { val: 7, poss },
-            Cell { val: 8, poss },
-            Cell { val: 9, poss },
-        ]; BOARD_SIZE];
-        assert_eq!(expected, actual.grid);
+        //then;
+        assert_eq!(SIMPLE_BOARD, actual.grid);
     }
 
     #[test]
@@ -227,19 +255,7 @@ mod tests {
         let result = actual.set_board_file(path);
         //then
         assert!(result.is_ok());
-        let poss = [true; BOARD_SIZE];
-        let expected = [[
-            Cell { val: 1, poss },
-            Cell { val: 2, poss },
-            Cell { val: 3, poss },
-            Cell { val: 4, poss },
-            Cell { val: 5, poss },
-            Cell { val: 6, poss },
-            Cell { val: 7, poss },
-            Cell { val: 8, poss },
-            Cell { val: 9, poss },
-        ]; BOARD_SIZE];
-        assert_eq!(expected, actual.grid);
+        assert_eq!(SIMPLE_BOARD, actual.grid);
     }
 
     #[test]
@@ -255,19 +271,7 @@ mod tests {
     fn given_valid_board_should_set_poss() {
         //given
         let mut given = Board::new();
-        given.set_board_string(
-            "\
-            003174258\
-            178325649\
-            254689731\
-            821437596\
-            496852317\
-            735961824\
-            589713462\
-            317246985\
-            042598173\
-        ",
-        );
+        given.set_board_file("./res/given_valid_board_should_set_poss.txt");
         //when
         given.set_all_poss();
         //then

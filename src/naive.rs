@@ -1,4 +1,4 @@
-use crate::board::{Board, BOARD_SIZE, Cell};
+use crate::board::{Board, Cell, BOARD_SIZE};
 
 pub fn naive(board: &mut Board) -> Option<Board> {
     board.set_all_poss();
