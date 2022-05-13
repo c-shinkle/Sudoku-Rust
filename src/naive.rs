@@ -1,8 +1,8 @@
-use crate::board::{Board, Cell, BOARD_SIZE};
+use crate::board::{Board, BOARD_SIZE};
 
 pub fn naive(board: &mut Board) -> Option<Board> {
     board.set_all_poss();
-    let maybe_cell = find_blank_cell(board);
+    let maybe_cell = board.find_blank_cell();
     if let Some((row, col, cell)) = maybe_cell {
         for i in 0..BOARD_SIZE {
             if cell.poss[i] {
@@ -18,18 +18,6 @@ pub fn naive(board: &mut Board) -> Option<Board> {
     } else {
         Some(*board)
     }
-}
-
-fn find_blank_cell(board: &Board) -> Option<(usize, usize, &Cell)> {
-    for row in 0..BOARD_SIZE {
-        for col in 0..BOARD_SIZE {
-            let cell = &board.grid[row][col];
-            if cell.is_blank() {
-                return Some((row, col, cell));
-            }
-        }
-    }
-    None
 }
 
 #[cfg(test)]

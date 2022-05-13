@@ -4,9 +4,11 @@ extern crate test;
 
 #[cfg(test)]
 mod tests {
-    use sudoku_rust::board::Board;
-    use sudoku_rust::naive::naive;
     use test::Bencher;
+    use sudoku_rust::board::Board;
+    use sudoku_rust::fewest_poss::fewest_poss;
+    // use sudoku_rust::fewest_poss::fewest_poss;
+    use sudoku_rust::naive::naive;
 
     #[bench]
     fn naive_hard_sudoku(b: &mut Bencher) {

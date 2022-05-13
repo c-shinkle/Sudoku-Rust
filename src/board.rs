@@ -136,6 +136,36 @@ impl Board {
             }
         }
     }
+
+    pub fn find_blank_cell(&self) -> Option<(usize, usize, &Cell)> {
+        for row in 0..BOARD_SIZE {
+            for col in 0..BOARD_SIZE {
+                let cell = &self.grid[row][col];
+                if cell.is_blank() {
+                    return Some((row, col, cell));
+                }
+            }
+        }
+        None
+    }
+
+    pub fn find_fewest_poss(&self) -> Option<(usize, usize, &Cell)> {
+        let mut smallest_count: usize = 10;
+        let mut fewest_so_far = None;
+        for row in 0..BOARD_SIZE {
+            for col in 0..BOARD_SIZE {
+                let cell = &self.grid[row][col];
+                if cell.is_blank() {
+                    let count = cell.poss.iter().filter(|p| **p).count();
+                    if smallest_count > count {
+                        smallest_count = count;
+                        fewest_so_far = Some((row, col, cell));
+                    }
+                }
+            }
+        }
+        fewest_so_far
+    }
 }
 
 #[cfg(test)]
