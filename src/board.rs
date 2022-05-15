@@ -166,13 +166,46 @@ impl Board {
         }
         fewest_so_far
     }
+
+    pub fn update_affected_poss(&mut self, row: usize, col: usize, val: u8) {
+        //update row
+        for i in 0..BOARD_SIZE {
+            let mut cell = &mut self.grid[row][i];
+            //is this check even necessary?
+            if cell.is_blank() {
+                cell.poss[(val - 1) as usize] = false;
+            }
+        }
+        //update col
+        for i in 0..BOARD_SIZE {
+            let mut cell = &mut self.grid[i][col];
+            //is this check even necessary?
+            if cell.is_blank() {
+                cell.poss[(val - 1) as usize] = false;
+            }
+        }
+        //update box
+        let box_row = row / 3;
+        let box_col = col / 3;
+        for i in 0..BOARD_SIZE {
+            let grid_row = box_row * 3 + (i / 3);
+            let grid_col = box_col * 3 + (i % 3);
+            let mut cell = &mut self.grid[grid_row][grid_col];
+            //is this check even necessary?
+            if cell.is_blank() {
+                cell.poss[(val - 1) as usize] = false;
+            }
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    // use std::default::default;
     use super::*;
 
     const SIMPLE_POSS: [bool; 9] = [true; BOARD_SIZE];
+    //TODO how to fix formatting
     const SIMPLE_BOARD: [[Cell; 9]; 9] = [[
         Cell {
             val: 1,
@@ -301,12 +334,434 @@ mod tests {
     fn given_valid_board_should_set_poss() {
         //given
         let mut given = Board::new();
-        given.set_board_file("./res/given_valid_board_should_set_poss.txt").expect("file to present");
+        given
+            .set_board_file("./res/given_valid_board_should_set_poss.txt")
+            .expect("file to present");
         //when
         given.set_all_poss();
         //then
         let actual = given.grid[0][0].poss;
         let expected = [false, false, false, false, false, true, false, false, true];
         assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn given_new_val_should_update_affected_cells() {
+        //given
+        let mut given = Board::new();
+        given
+            .set_board_file("./res/given_new_val_should_update_affected_cells.txt")
+            .expect("File to be present");
+        given.set_all_poss();
+        let false_poss = [false; BOARD_SIZE];
+        for row in 0..BOARD_SIZE {
+            for col in 0..BOARD_SIZE {
+                let mut cell = &mut given.grid[row][col];
+                if !cell.is_blank() {
+                    cell.poss = false_poss;
+                }
+            }
+        }
+        given.grid[4][4] = Cell {
+            val: 8,
+            poss: false_poss,
+        };
+        //when
+        let mut actual = given.clone();
+        actual.update_affected_poss(4, 4, 8);
+        //then
+        let expected = [
+            //row 0
+            [
+                Cell {
+                    val: 4,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 5,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 1,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 3,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, false, false, false, false, true],
+                },
+                Cell {
+                    val: 2,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 7,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, false, false, false, true, false],
+                },
+                Cell {
+                    val: 6,
+                    poss: false_poss,
+                },
+            ],
+            //row 1
+            [
+                Cell {
+                    val: 9,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 2,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 3,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, false, false, false, true, false],
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, false, true, false, false, false],
+                },
+                Cell {
+                    val: 7,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 1,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 4,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 5,
+                    poss: false_poss,
+                },
+            ],
+            //row 2
+            [
+                Cell {
+                    val: 8,
+                    poss: [false, false, false, false, false, false, false, true, false],
+                },
+                Cell {
+                    val: 6,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 7,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 1,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, true, false, false, false, false],
+                },
+                Cell {
+                    val: 4,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 3,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 2,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 9,
+                    poss: false_poss,
+                },
+            ],
+            //row 3
+            [
+                Cell {
+                    val: 1,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 3,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 6,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 5,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, true, false, false, false, false, false],
+                },
+                Cell {
+                    val: 9,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 2,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 7,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, false, false, false, true, false],
+                },
+            ],
+            //row 4
+            [
+                Cell {
+                    val: 0,
+                    poss: [false, true, false, false, false, false, false, false, false],
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, true, false, false, false, false, false],
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, true, false, false, false, false],
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, false, false, true, false, false],
+                },
+                Cell {
+                    val: 8,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, true, false, false, false, false, false, false],
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, false, true, false, false, false],
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, false, false, false, false, true],
+                },
+                Cell {
+                    val: 0,
+                    poss: [true, false, false, false, false, false, false, false, false],
+                },
+            ],
+            //row 5
+            [
+                Cell {
+                    val: 7,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 9,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, false, false, false, true, false],
+                },
+                Cell {
+                    val: 6,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, true, false, false, false, false, false, false, false],
+                },
+                Cell {
+                    val: 1,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 4,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 5,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 3,
+                    poss: false_poss,
+                },
+            ],
+            //row 6
+            [
+                Cell {
+                    val: 5,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 8,
+                    poss: [false, false, false, false, false, false, false, true, false],
+                },
+                Cell {
+                    val: 2,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 4,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, true, false, false, false, false, false, false],
+                },
+                Cell {
+                    val: 6,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 9,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 1,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 7,
+                    poss: false_poss,
+                },
+            ],
+            //row 7
+            [
+                Cell {
+                    val: 6,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 1,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 9,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 2,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, false, false, true, false, false],
+                },
+                Cell {
+                    val: 5,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 8,
+                    poss: [false, false, false, false, false, false, false, true, false],
+                },
+                Cell {
+                    val: 3,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 4,
+                    poss: false_poss,
+                },
+            ],
+            //row 8
+            [
+                Cell {
+                    val: 3,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 7,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 4,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 9,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 0,
+                    poss: [true, false, false, false, false, false, false, false, false],
+                },
+                Cell {
+                    val: 0,
+                    poss: [false, false, false, false, false, false, false, true, false],
+                },
+                Cell {
+                    val: 5,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 6,
+                    poss: false_poss,
+                },
+                Cell {
+                    val: 2,
+                    poss: false_poss,
+                },
+            ],
+        ];
+        //assert rows match
+        let expected_middle_row_poss: Vec<[bool; BOARD_SIZE]> =
+            expected[4].iter().map(|cell| cell.poss).collect();
+        let actual_middle_row_poss: Vec<[bool; BOARD_SIZE]> =
+            actual.grid[4].iter().map(|cell| cell.poss).collect();
+        for i in 0..BOARD_SIZE {
+            assert_eq!(
+                actual_middle_row_poss[i], expected_middle_row_poss[i],
+                "row {}",
+                i
+            );
+        }
+        // assert cols match
+        let expected_middle_col_poss: Vec<[bool; BOARD_SIZE]> =
+            expected.iter().map(|row| row[4].poss).collect();
+        let actual_middle_col_poss: Vec<[bool; BOARD_SIZE]> =
+            actual.grid.iter().map(|row| row[4].poss).collect();
+        for i in 0..BOARD_SIZE {
+            assert_eq!(
+                actual_middle_col_poss[i], expected_middle_col_poss[i],
+                "col {}",
+                i
+            );
+        }
+        //assert box match
+        let mut expected_middle_box_cell: Vec<Cell> = Vec::new();
+        expected_middle_box_cell.extend(expected[3..6].iter().map(|row| row[3]));
+        expected_middle_box_cell.extend(expected[3..6].iter().map(|row| row[4]));
+        expected_middle_box_cell.extend(expected[3..6].iter().map(|row| row[5]));
+        let mut actual_middle_box_poss: Vec<Cell> = Vec::new();
+        actual_middle_box_poss.extend(actual.grid[3..6].iter().map(|row| row[3]));
+        actual_middle_box_poss.extend(actual.grid[3..6].iter().map(|row| row[4]));
+        actual_middle_box_poss.extend(actual.grid[3..6].iter().map(|row| row[5]));
+        for i in 0..BOARD_SIZE {
+            assert_eq!(
+                actual_middle_box_poss[i], expected_middle_box_cell[i],
+                "box {}",
+                i
+            );
+        }
     }
 }
