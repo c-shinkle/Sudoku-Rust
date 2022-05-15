@@ -150,7 +150,7 @@ impl Board {
     }
 
     pub fn find_fewest_poss(&self) -> Option<(usize, usize, &Cell)> {
-        let mut smallest_count: usize = 10;
+        let mut smallest_count = 10;
         let mut fewest_so_far = None;
         for row in 0..BOARD_SIZE {
             for col in 0..BOARD_SIZE {
@@ -301,7 +301,7 @@ mod tests {
     fn given_valid_board_should_set_poss() {
         //given
         let mut given = Board::new();
-        given.set_board_file("./res/given_valid_board_should_set_poss.txt");
+        given.set_board_file("./res/given_valid_board_should_set_poss.txt").expect("file to present");
         //when
         given.set_all_poss();
         //then
