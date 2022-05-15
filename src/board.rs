@@ -3,8 +3,9 @@ use std::io::{BufRead, BufReader, Result};
 
 pub const BOARD_SIZE: usize = 9;
 const TOO_FEW_CHARS: &str = "Should be exactly 81 chars in string slice.";
+const TRUE_POSS: [bool; 9] = [true; BOARD_SIZE];
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Cell {
     pub val: u8,
     pub poss: [bool; BOARD_SIZE],
@@ -33,7 +34,7 @@ impl Board {
         Board {
             grid: [[Cell {
                 val: 0,
-                poss: [true; BOARD_SIZE],
+                poss: TRUE_POSS,
             }; BOARD_SIZE]; BOARD_SIZE],
         }
     }
@@ -201,47 +202,45 @@ impl Board {
 
 #[cfg(test)]
 mod tests {
-    // use std::default::default;
     use super::*;
 
-    const SIMPLE_POSS: [bool; 9] = [true; BOARD_SIZE];
     //TODO how to fix formatting
     const SIMPLE_BOARD: [[Cell; 9]; 9] = [[
         Cell {
             val: 1,
-            poss: SIMPLE_POSS,
+            poss: TRUE_POSS,
         },
         Cell {
             val: 2,
-            poss: SIMPLE_POSS,
+            poss: TRUE_POSS,
         },
         Cell {
             val: 3,
-            poss: SIMPLE_POSS,
+            poss: TRUE_POSS,
         },
         Cell {
             val: 4,
-            poss: SIMPLE_POSS,
+            poss: TRUE_POSS,
         },
         Cell {
             val: 5,
-            poss: SIMPLE_POSS,
+            poss: TRUE_POSS,
         },
         Cell {
             val: 6,
-            poss: SIMPLE_POSS,
+            poss: TRUE_POSS,
         },
         Cell {
             val: 7,
-            poss: SIMPLE_POSS,
+            poss: TRUE_POSS,
         },
         Cell {
             val: 8,
-            poss: SIMPLE_POSS,
+            poss: TRUE_POSS,
         },
         Cell {
             val: 9,
-            poss: SIMPLE_POSS,
+            poss: TRUE_POSS,
         },
     ]; BOARD_SIZE];
 
@@ -362,13 +361,11 @@ mod tests {
                 }
             }
         }
-        given.grid[4][4] = Cell {
-            val: 8,
-            poss: false_poss,
-        };
+        given.grid[4][4].val = 8;
+        given.grid[4][4].poss = false_poss;
         //when
-        let mut actual = given.clone();
-        actual.update_affected_poss(4, 4, 8);
+        given.update_affected_poss(4, 4, 8);
+        let actual = given.clone().grid;
         //then
         let expected = [
             //row 0
@@ -452,7 +449,7 @@ mod tests {
             //row 2
             [
                 Cell {
-                    val: 8,
+                    val: 0,
                     poss: [false, false, false, false, false, false, false, true, false],
                 },
                 Cell {
@@ -612,7 +609,7 @@ mod tests {
                     poss: false_poss,
                 },
                 Cell {
-                    val: 8,
+                    val: 0,
                     poss: [false, false, false, false, false, false, false, true, false],
                 },
                 Cell {
@@ -671,7 +668,7 @@ mod tests {
                     poss: false_poss,
                 },
                 Cell {
-                    val: 8,
+                    val: 0,
                     poss: [false, false, false, false, false, false, false, true, false],
                 },
                 Cell {
@@ -723,45 +720,10 @@ mod tests {
                 },
             ],
         ];
-        //assert rows match
-        let expected_middle_row_poss: Vec<[bool; BOARD_SIZE]> =
-            expected[4].iter().map(|cell| cell.poss).collect();
-        let actual_middle_row_poss: Vec<[bool; BOARD_SIZE]> =
-            actual.grid[4].iter().map(|cell| cell.poss).collect();
-        for i in 0..BOARD_SIZE {
-            assert_eq!(
-                actual_middle_row_poss[i], expected_middle_row_poss[i],
-                "row {}",
-                i
-            );
-        }
-        // assert cols match
-        let expected_middle_col_poss: Vec<[bool; BOARD_SIZE]> =
-            expected.iter().map(|row| row[4].poss).collect();
-        let actual_middle_col_poss: Vec<[bool; BOARD_SIZE]> =
-            actual.grid.iter().map(|row| row[4].poss).collect();
-        for i in 0..BOARD_SIZE {
-            assert_eq!(
-                actual_middle_col_poss[i], expected_middle_col_poss[i],
-                "col {}",
-                i
-            );
-        }
-        //assert box match
-        let mut expected_middle_box_cell: Vec<Cell> = Vec::new();
-        expected_middle_box_cell.extend(expected[3..6].iter().map(|row| row[3]));
-        expected_middle_box_cell.extend(expected[3..6].iter().map(|row| row[4]));
-        expected_middle_box_cell.extend(expected[3..6].iter().map(|row| row[5]));
-        let mut actual_middle_box_poss: Vec<Cell> = Vec::new();
-        actual_middle_box_poss.extend(actual.grid[3..6].iter().map(|row| row[3]));
-        actual_middle_box_poss.extend(actual.grid[3..6].iter().map(|row| row[4]));
-        actual_middle_box_poss.extend(actual.grid[3..6].iter().map(|row| row[5]));
-        for i in 0..BOARD_SIZE {
-            assert_eq!(
-                actual_middle_box_poss[i], expected_middle_box_cell[i],
-                "box {}",
-                i
-            );
+        for row in 0..BOARD_SIZE {
+            for col in 0..BOARD_SIZE {
+                assert_eq!(actual[row][col], expected[row][col], "row {}, col {}", row, col);
+            }
         }
     }
 }
