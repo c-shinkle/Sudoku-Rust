@@ -5,7 +5,7 @@ pub const BOARD_SIZE: usize = 9;
 const TOO_FEW_CHARS: &str = "Should be exactly 81 chars in string slice.";
 const TRUE_POSS: [bool; 9] = [true; BOARD_SIZE];
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Cell {
     pub val: u8,
     pub poss: [bool; BOARD_SIZE],
@@ -204,44 +204,21 @@ impl Board {
 mod tests {
     use super::*;
 
-    //TODO how to fix formatting
+    #[inline]
+    const fn new(val: u8, poss: [bool; BOARD_SIZE]) -> Cell {
+        Cell { val, poss }
+    }
+
     const SIMPLE_BOARD: [[Cell; 9]; 9] = [[
-        Cell {
-            val: 1,
-            poss: TRUE_POSS,
-        },
-        Cell {
-            val: 2,
-            poss: TRUE_POSS,
-        },
-        Cell {
-            val: 3,
-            poss: TRUE_POSS,
-        },
-        Cell {
-            val: 4,
-            poss: TRUE_POSS,
-        },
-        Cell {
-            val: 5,
-            poss: TRUE_POSS,
-        },
-        Cell {
-            val: 6,
-            poss: TRUE_POSS,
-        },
-        Cell {
-            val: 7,
-            poss: TRUE_POSS,
-        },
-        Cell {
-            val: 8,
-            poss: TRUE_POSS,
-        },
-        Cell {
-            val: 9,
-            poss: TRUE_POSS,
-        },
+        new(1, TRUE_POSS),
+        new(2, TRUE_POSS),
+        new(3, TRUE_POSS),
+        new(4, TRUE_POSS),
+        new(5, TRUE_POSS),
+        new(6, TRUE_POSS),
+        new(7, TRUE_POSS),
+        new(8, TRUE_POSS),
+        new(9, TRUE_POSS),
     ]; BOARD_SIZE];
 
     #[test]
@@ -367,362 +344,125 @@ mod tests {
         given.update_affected_poss(4, 4, 8);
         let actual = given.clone().grid;
         //then
-        let expected = [
+        #[rustfmt::skip]
+        let expected:[[Cell; BOARD_SIZE]; BOARD_SIZE] = [
             //row 0
             [
-                Cell {
-                    val: 4,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 5,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 1,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 3,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, false, false, false, true],
-                },
-                Cell {
-                    val: 2,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 7,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, false, false, true, false],
-                },
-                Cell {
-                    val: 6,
-                    poss: false_poss,
-                },
+                new(4, false_poss),
+                new(5, false_poss),
+                new(1, false_poss),
+                new(3, false_poss),
+                new(0, [false, false, false, false, false, false, false, false, true]),
+                new(2, false_poss),
+                new(7, false_poss),
+                new(0, [false, false, false, false, false, false, false, true, false]),
+                new(6, false_poss),
             ],
             //row 1
             [
-                Cell {
-                    val: 9,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 2,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 3,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, false, false, true, false],
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, true, false, false, false],
-                },
-                Cell {
-                    val: 7,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 1,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 4,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 5,
-                    poss: false_poss,
-                },
+                new(9, false_poss),
+                new(2, false_poss),
+                new(3, false_poss),
+                new(0, [false, false, false, false, false, false, false, true, false]),
+                new(0, [false, false, false, false, false, true, false, false, false]),
+                new(7, false_poss),
+                new(1, false_poss),
+                new(4, false_poss),
+                new(5, false_poss),
             ],
             //row 2
             [
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, false, false, true, false],
-                },
-                Cell {
-                    val: 6,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 7,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 1,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, true, false, false, false, false],
-                },
-                Cell {
-                    val: 4,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 3,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 2,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 9,
-                    poss: false_poss,
-                },
+                new(0, [false, false, false, false, false, false, false, true, false]),
+                new(6, false_poss),
+                new(7, false_poss),
+                new(1, false_poss),
+                new(0, [false, false, false, false, true, false, false, false, false]),
+                new(4, false_poss),
+                new(3, false_poss),
+                new(2, false_poss),
+                new(9, false_poss),
             ],
             //row 3
             [
-                Cell {
-                    val: 1,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 3,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 6,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 5,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, true, false, false, false, false, false],
-                },
-                Cell {
-                    val: 9,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 2,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 7,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, false, false, true, false],
-                },
+                new(1, false_poss),
+                new(3, false_poss),
+                new(6, false_poss),
+                new(5, false_poss),
+                new(0, [false, false, false, true, false, false, false, false, false]),
+                new(9, false_poss),
+                new(2, false_poss),
+                new(7, false_poss),
+                new(0, [false, false, false, false, false, false, false, true, false]),
+
             ],
             //row 4
             [
-                Cell {
-                    val: 0,
-                    poss: [false, true, false, false, false, false, false, false, false],
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, true, false, false, false, false, false],
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, true, false, false, false, false],
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, false, true, false, false],
-                },
-                Cell {
-                    val: 8,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, true, false, false, false, false, false, false],
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, true, false, false, false],
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, false, false, false, true],
-                },
-                Cell {
-                    val: 0,
-                    poss: [true, false, false, false, false, false, false, false, false],
-                },
+                new(0, [false, true, false, false, false, false, false, false, false]),
+                new(0, [false, false, false, true, false, false, false, false, false]),
+                new(0, [false, false, false, false, true, false, false, false, false]),
+                new(0, [false, false, false, false, false, false, true, false, false]),
+                new(8, false_poss),
+                new(0, [false, false, true, false, false, false, false, false, false]),
+                new(0, [false, false, false, false, false, true, false, false, false]),
+                new(0, [false, false, false, false, false, false, false, false, true]),
+                new(0, [true, false, false, false, false, false, false, false, false]),
             ],
             //row 5
             [
-                Cell {
-                    val: 7,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 9,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, false, false, true, false],
-                },
-                Cell {
-                    val: 6,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, true, false, false, false, false, false, false, false],
-                },
-                Cell {
-                    val: 1,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 4,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 5,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 3,
-                    poss: false_poss,
-                },
+                new(7, false_poss),
+                new(9, false_poss),
+                new(0, [false, false, false, false, false, false, false, true, false]),
+                new(6, false_poss),
+                new(0, [false, true, false, false, false, false, false, false, false]),
+                new(1, false_poss),
+                new(4, false_poss),
+                new(5, false_poss),
+                new(3, false_poss),
             ],
             //row 6
             [
-                Cell {
-                    val: 5,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, false, false, true, false],
-                },
-                Cell {
-                    val: 2,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 4,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, true, false, false, false, false, false, false],
-                },
-                Cell {
-                    val: 6,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 9,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 1,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 7,
-                    poss: false_poss,
-                },
+                new(5, false_poss),
+                new(0, [false, false, false, false, false, false, false, true, false]),
+                new(2, false_poss),
+                new(4, false_poss),
+                new(0, [false, false, true, false, false, false, false, false, false]),
+                new(6, false_poss),
+                new(9, false_poss),
+                new(1, false_poss),
+                new(7, false_poss),
             ],
             //row 7
             [
-                Cell {
-                    val: 6,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 1,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 9,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 2,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, false, true, false, false],
-                },
-                Cell {
-                    val: 5,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, false, false, true, false],
-                },
-                Cell {
-                    val: 3,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 4,
-                    poss: false_poss,
-                },
+                new(6, false_poss),
+                new(1, false_poss),
+                new(9, false_poss),
+                new(2, false_poss),
+                new(0, [false, false, false, false, false, false, true, false, false]),
+                new(5, false_poss),
+                new(0, [false, false, false, false, false, false, false, true, false]),
+                new(3, false_poss),
+                new(4, false_poss),
             ],
             //row 8
             [
-                Cell {
-                    val: 3,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 7,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 4,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 9,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 0,
-                    poss: [true, false, false, false, false, false, false, false, false],
-                },
-                Cell {
-                    val: 0,
-                    poss: [false, false, false, false, false, false, false, true, false],
-                },
-                Cell {
-                    val: 5,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 6,
-                    poss: false_poss,
-                },
-                Cell {
-                    val: 2,
-                    poss: false_poss,
-                },
+                new(3, false_poss),
+                new(7, false_poss),
+                new(4, false_poss),
+                new(9, false_poss),
+                new(0, [true, false, false, false, false, false, false, false, false]),
+                new(0, [false, false, false, false, false, false, false, true, false]),
+                new(5, false_poss),
+                new(6, false_poss),
+                new(2, false_poss),
             ],
         ];
         for row in 0..BOARD_SIZE {
             for col in 0..BOARD_SIZE {
-                assert_eq!(actual[row][col], expected[row][col], "row {}, col {}", row, col);
+                assert_eq!(
+                    actual[row][col], expected[row][col],
+                    "row {}, col {}",
+                    row, col
+                );
             }
         }
     }
