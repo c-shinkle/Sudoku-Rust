@@ -13,7 +13,6 @@ fn helper(board: &mut Board) -> Option<Board> {
                 let mut copied_board = *board;
                 let guess = i as u8 + 1;
                 copied_board.grid[row][col].val = guess;
-                copied_board.grid[row][col].poss = [false; BOARD_SIZE];
                 copied_board.update_affected_poss(row, col, guess);
                 let maybe_solved = helper(&mut copied_board);
                 if maybe_solved.is_some() {
