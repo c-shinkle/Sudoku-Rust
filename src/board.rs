@@ -3,7 +3,7 @@ use std::io::{BufRead, BufReader, Result};
 
 pub const BOARD_SIZE: usize = 9;
 const TOO_FEW_CHARS: &str = "Should be exactly 81 chars in string slice.";
-const TRUE_POSS: [bool; 9] = [true; BOARD_SIZE];
+const TRUE_POSS: [bool; BOARD_SIZE] = [true; BOARD_SIZE];
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Cell {
@@ -11,7 +11,7 @@ pub struct Cell {
     pub poss: [bool; BOARD_SIZE],
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Board {
     pub grid: [[Cell; BOARD_SIZE]; BOARD_SIZE],
 }
@@ -84,7 +84,7 @@ impl Board {
         chars
     }
 
-    fn add_ith_row(row: [Cell; 9], chars: &mut String) {
+    fn add_ith_row(row: [Cell; BOARD_SIZE], chars: &mut String) {
         chars.push((row[0].val + 48) as char);
         chars.push((row[1].val + 48) as char);
         chars.push((row[2].val + 48) as char);
@@ -209,17 +209,19 @@ mod tests {
         Cell { val, poss }
     }
 
-    const SIMPLE_BOARD: [[Cell; 9]; 9] = [[
-        new(1, TRUE_POSS),
-        new(2, TRUE_POSS),
-        new(3, TRUE_POSS),
-        new(4, TRUE_POSS),
-        new(5, TRUE_POSS),
-        new(6, TRUE_POSS),
-        new(7, TRUE_POSS),
-        new(8, TRUE_POSS),
-        new(9, TRUE_POSS),
-    ]; BOARD_SIZE];
+    const SIMPLE_BOARD: Board = Board {
+        grid: [[
+            new(1, TRUE_POSS),
+            new(2, TRUE_POSS),
+            new(3, TRUE_POSS),
+            new(4, TRUE_POSS),
+            new(5, TRUE_POSS),
+            new(6, TRUE_POSS),
+            new(7, TRUE_POSS),
+            new(8, TRUE_POSS),
+            new(9, TRUE_POSS),
+        ]; BOARD_SIZE],
+    };
 
     #[test]
     fn given_ref_to_blank_board_should_print_board() {
@@ -263,7 +265,7 @@ mod tests {
         let mut actual = Board::new();
         actual.set_board_string(&given);
         //then;
-        assert_eq!(SIMPLE_BOARD, actual.grid);
+        assert_eq!(actual, SIMPLE_BOARD);
     }
 
     #[test]
@@ -294,7 +296,7 @@ mod tests {
         let result = actual.set_board_file(path);
         //then
         assert!(result.is_ok());
-        assert_eq!(SIMPLE_BOARD, actual.grid);
+        assert_eq!(actual, SIMPLE_BOARD);
     }
 
     #[test]
@@ -312,13 +314,12 @@ mod tests {
         let mut given = Board::new();
         given
             .set_board_file("./res/given_valid_board_should_set_poss.txt")
-            .expect("file to present");
+            .expect("File to be present");
         //when
         given.set_all_poss();
-        //then
         let actual = given.grid[0][0].poss;
-        let expected = [false, false, false, false, false, true, false, false, true];
-        assert_eq!(expected, actual);
+        //then
+        assert_eq!(actual, [false, false, false, false, false, true, false, false, true]);
     }
 
     #[test]
@@ -342,10 +343,10 @@ mod tests {
         given.grid[4][4].poss = false_poss;
         //when
         given.update_affected_poss(4, 4, 8);
-        let actual = given.clone().grid;
+        let actual = given;
         //then
         #[rustfmt::skip]
-        let expected:[[Cell; BOARD_SIZE]; BOARD_SIZE] = [
+        let grid = [
             //row 0
             [
                 new(4, false_poss),
@@ -456,14 +457,15 @@ mod tests {
                 new(2, false_poss),
             ],
         ];
-        for row in 0..BOARD_SIZE {
-            for col in 0..BOARD_SIZE {
-                assert_eq!(
-                    actual[row][col], expected[row][col],
-                    "row {}, col {}",
-                    row, col
-                );
-            }
-        }
+        // for row in 0..BOARD_SIZE {
+        //     for col in 0..BOARD_SIZE {
+        //         assert_eq!(
+        //             actual[row][col], expected[row][col],
+        //             "row {}, col {}",
+        //             row, col
+        //         );
+        //     }
+        // }
+        assert_eq!(actual, Board { grid });
     }
 }

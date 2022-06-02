@@ -7,15 +7,14 @@ pub fn fewest_poss(board: &mut Board) -> Option<Board> {
         for i in 0..BOARD_SIZE {
             if cell.poss[i] {
                 let mut copied_board = *board;
-                copied_board.grid[row][col].val = i as u8 + 1;
+                copied_board.grid[row][col].val = (i + 1) as u8;
                 let maybe_solved = fewest_poss(&mut copied_board);
                 if maybe_solved.is_some() {
                     return maybe_solved;
                 }
             }
         }
-        None
-    } else {
-        Some(*board)
+        return None;
     }
+    Some(*board)
 }
