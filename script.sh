@@ -1,2 +1,2 @@
-docker build -t sudoku-rust .
+docker build --progress=plain -t sudoku-rust .
 docker run --rm --name sudoku sudoku-rust

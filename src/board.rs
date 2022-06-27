@@ -319,7 +319,10 @@ mod tests {
         given.set_all_poss();
         let actual = given.grid[0][0].poss;
         //then
-        assert_eq!(actual, [false, false, false, false, false, true, false, false, true]);
+        assert_eq!(
+            actual,
+            [false, false, false, false, false, true, false, false, true]
+        );
     }
 
     #[test]
