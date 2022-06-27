@@ -8,8 +8,11 @@ fn main() {
         .expect("File to be present");
     given.set_all_poss();
     let maybe_solved = prev_poss(&mut given);
-    println!("Did I solve it? {}", maybe_solved.is_some());
+    print!("Did I solve it? ");
     if maybe_solved.is_some() {
+        println!("yes");
         println!("{}", maybe_solved.unwrap().print_board());
+    } else {
+        println!("no");
     }
 }
