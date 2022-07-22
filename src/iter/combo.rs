@@ -13,7 +13,7 @@ pub fn combo(board: &mut Board) -> Option<Board> {
                 let guess = (i + 1) as u8;
                 board.grid[row][col].val = guess;
                 board.grid[row][col].poss[i] = false;
-                history.push(board.update_affected_poss(row, col, guess));
+                history.push(board.update_affected_poss_with_changes(row, col, guess));
                 break;
             }
         }

@@ -181,7 +181,35 @@ impl Board {
         fewest_so_far
     }
 
-    pub fn update_affected_poss(&mut self, row: usize, col: usize, guess: u8) -> ChangesWithGuess {
+    pub fn update_affected_poss(&mut self, row: usize, col: usize, val: u8) {
+        //update row
+        for i in 0..BOARD_SIZE {
+            let mut cell = &mut self.grid[row][i];
+            if cell.is_blank() {
+                cell.poss[(val - 1) as usize] = false;
+            }
+        }
+        //update col
+        for i in 0..BOARD_SIZE {
+            let mut cell = &mut self.grid[i][col];
+            if cell.is_blank() {
+                cell.poss[(val - 1) as usize] = false;
+            }
+        }
+        //update box
+        let box_row = row / 3;
+        let box_col = col / 3;
+        for i in 0..BOARD_SIZE {
+            let grid_row = box_row * 3 + (i / 3);
+            let grid_col = box_col * 3 + (i % 3);
+            let mut cell = &mut self.grid[grid_row][grid_col];
+            if cell.is_blank() {
+                cell.poss[(val - 1) as usize] = false;
+            }
+        }
+    }
+
+    pub fn update_affected_poss_with_changes(&mut self, row: usize, col: usize, guess: u8) -> ChangesWithGuess {
         let mut changes = Vec::new();
         let poss = (guess - 1) as usize;
         //update row
@@ -380,7 +408,7 @@ mod tests {
         given.grid[4][4].val = 8;
         given.grid[4][4].poss = false_poss;
         //when
-        given.update_affected_poss(4, 4, 8);
+        given.update_affected_poss_with_changes(4, 4, 8);
         let actual = given;
         //then
         #[rustfmt::skip]
