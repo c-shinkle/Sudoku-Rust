@@ -8,11 +8,7 @@ mod tests {
     use test::Bencher;
 
     use sudoku_rust::board::Board;
-    use sudoku_rust::iter_combo;
-    use sudoku_rust::rec_combo;
-    use sudoku_rust::rec_fewest_poss::fewest_poss;
-    use sudoku_rust::rec_naive::naive;
-    use sudoku_rust::rec_prev_poss::prev_poss;
+    use sudoku_rust::{iter, rec};
 
     fn setup() -> Board {
         let mut given = Board::new();
@@ -34,7 +30,7 @@ mod tests {
         let mut maybe_solved = Option::default();
 
         b.iter(|| {
-            maybe_solved = naive(&mut given);
+            maybe_solved = rec::naive::naive(&mut given);
         });
 
         teardown(maybe_solved);
@@ -46,7 +42,7 @@ mod tests {
         let mut maybe_solved = Option::default();
 
         b.iter(|| {
-            maybe_solved = fewest_poss(&mut given);
+            maybe_solved = rec::fewest_poss::fewest_poss(&mut given);
         });
 
         teardown(maybe_solved);
@@ -58,7 +54,7 @@ mod tests {
         let mut maybe_solved = Option::default();
 
         b.iter(|| {
-            maybe_solved = prev_poss(&mut given);
+            maybe_solved = rec::prev_poss::prev_poss(&mut given);
         });
 
         teardown(maybe_solved);
@@ -70,7 +66,7 @@ mod tests {
         let mut maybe_solved = Option::default();
 
         b.iter(|| {
-            maybe_solved = rec_combo::combo(&mut given);
+            maybe_solved = rec::combo::combo(&mut given);
         });
 
         teardown(maybe_solved);
@@ -82,7 +78,7 @@ mod tests {
         let mut maybe_solved = Option::default();
 
         b.iter(|| {
-            maybe_solved = iter_combo::combo(&mut given);
+            maybe_solved = iter::combo::combo(&mut given);
         });
 
         teardown(maybe_solved);

@@ -1,4 +1,4 @@
-use crate::board::{Board, ChangesWithGuess, BOARD_SIZE};
+use crate::board::{Board, BOARD_SIZE, ChangesWithGuess};
 
 pub fn combo(board: &mut Board) -> Option<Board> {
     board.set_all_poss();

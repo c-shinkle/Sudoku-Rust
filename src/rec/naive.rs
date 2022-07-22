@@ -22,7 +22,6 @@ pub fn naive(board: &mut Board) -> Option<Board> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::board::Board;
 
     #[test]
     fn given_valid_board_should_solve_board() {
