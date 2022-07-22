@@ -16,6 +16,19 @@ pub struct Board {
     pub grid: [[Cell; BOARD_SIZE]; BOARD_SIZE],
 }
 
+#[derive(Debug)]
+pub struct Change {
+    pub row: usize,
+    pub col: usize,
+    pub cell: Cell,
+}
+
+#[derive(Debug)]
+pub struct ChangesWithGuess {
+    pub changes: Vec<Change>,
+    pub guess: u8,
+}
+
 impl Cell {
     #[inline]
     pub fn is_blank(&self) -> bool {
@@ -168,21 +181,31 @@ impl Board {
         fewest_so_far
     }
 
-    pub fn update_affected_poss(&mut self, row: usize, col: usize, val: u8) {
+    pub fn update_affected_poss(&mut self, row: usize, col: usize, guess: u8) -> ChangesWithGuess {
+        let mut changes = Vec::new();
+        let poss = (guess - 1) as usize;
         //update row
         for i in 0..BOARD_SIZE {
             let mut cell = &mut self.grid[row][i];
-            //is this check even necessary?
-            if cell.is_blank() {
-                cell.poss[(val - 1) as usize] = false;
+            if cell.is_blank() && cell.poss[poss] {
+                changes.push(Change {
+                    row,
+                    col: i,
+                    cell: *cell,
+                });
+                cell.poss[poss] = false;
             }
         }
         //update col
         for i in 0..BOARD_SIZE {
             let mut cell = &mut self.grid[i][col];
-            //is this check even necessary?
-            if cell.is_blank() {
-                cell.poss[(val - 1) as usize] = false;
+            if cell.is_blank() && cell.poss[poss] {
+                changes.push(Change {
+                    row: i,
+                    col,
+                    cell: *cell,
+                });
+                cell.poss[poss] = false;
             }
         }
         //update box
@@ -192,10 +215,22 @@ impl Board {
             let grid_row = box_row * 3 + (i / 3);
             let grid_col = box_col * 3 + (i % 3);
             let mut cell = &mut self.grid[grid_row][grid_col];
-            //is this check even necessary?
-            if cell.is_blank() {
-                cell.poss[(val - 1) as usize] = false;
+            if cell.is_blank() && cell.poss[poss] {
+                changes.push(Change {
+                    row: grid_row,
+                    col: grid_col,
+                    cell: *cell,
+                });
+                cell.poss[poss] = false;
             }
+        }
+        ChangesWithGuess { changes, guess }
+    }
+
+    pub fn reverse_affected_poss(&mut self, changes: Vec<Change>) {
+        for change in changes {
+            let Change { row, col, cell } = change;
+            self.grid[row][col] = cell;
         }
     }
 }
@@ -349,7 +384,7 @@ mod tests {
         let actual = given;
         //then
         #[rustfmt::skip]
-        let grid = [
+            let grid = [
             //row 0
             [
                 new(4, false_poss),
@@ -397,7 +432,6 @@ mod tests {
                 new(2, false_poss),
                 new(7, false_poss),
                 new(0, [false, false, false, false, false, false, false, true, false]),
-
             ],
             //row 4
             [
