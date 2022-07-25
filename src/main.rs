@@ -1,4 +1,3 @@
-use std::sync::atomic::compiler_fence;
 use sudoku_rust::board::Board;
 use sudoku_rust::iter::combo::combo;
 

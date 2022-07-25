@@ -1,43 +1,43 @@
-use crate::board::{Board, BOARD_SIZE, ChangesWithGuess, Location};
+use crate::board::{Board, History, BOARD_SIZE};
 
 pub fn combo(board: &mut Board) -> Option<Board> {
     board.set_all_poss();
-    let mut history_stack: Vec<ChangesWithGuess> = Vec::new();
+    let mut history_stack: Vec<History> = Vec::new();
 
-    while let Some((location, count)) = board.find_fewest_poss_location() {
-        let location = location;
-        let count = count;
-        println!("{}", board.print_board());
-        if count != 0 {
-            let cell = &mut board.grid[location.row][location.col];
-            for i in 0..BOARD_SIZE {
-                if cell.poss[i] {
-                    let guess = (i + 1) as u8;
-                    cell.val = guess;
-                    history_stack.push(ChangesWithGuess {
-                        guess,
-                        guess_location: location,
-                        changes: board.update_affected_poss_with_changes(location, guess),
-                    });
-                    break;
-                }
+    while let Some((row, col, cell)) = board.find_fewest_poss() {
+        // let row = row;
+        // let col = col;
+        // let cell = cell;
+        // println!("{}", board.print_board());
+        let mut did_not_find_guess = true;
+        for i in 0..BOARD_SIZE {
+            if cell.poss[i] {
+                did_not_find_guess = false;
+                let guess = (i + 1) as u8;
+                history_stack.push(History {
+                    board: *board,
+                    guess,
+                    row,
+                    col,
+                });
+                board.grid[row][col].val = guess;
+                board.update_affected_poss(row, col, guess);
+                break;
             }
-        } else {
-            let changes_with_guess = history_stack.pop();
-            if changes_with_guess.is_none() {
-                return None;
-            }
+        }
 
-            let ChangesWithGuess {
+        if did_not_find_guess {
+            let maybe_board = history_stack.pop();
+            maybe_board.as_ref()?;
+
+            let History {
+                board: prev_board,
                 guess,
-                guess_location: Location { row, col },
-                changes,
-            } = changes_with_guess.unwrap();
-            //reverse possibility of guess for affected cells
-            board.reverse_affected_poss(changes, guess);
-            //reverse guess, BUT remember it was a bad guess!
-            board.grid[row][col].val = 0;
-            board.grid[row][col].poss[(guess - 1) as usize] = false;
+                row: prev_row,
+                col: prev_col,
+            } = maybe_board.unwrap();
+            *board = prev_board;
+            board.grid[prev_row][prev_col].poss[(guess - 1) as usize] = false;
         }
     }
     Some(*board)
