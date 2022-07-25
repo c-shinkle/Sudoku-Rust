@@ -158,7 +158,7 @@ impl Board {
         None
     }
 
-    pub fn find_fewest_poss(&self) -> Option<(usize, usize, &Cell)> {
+    pub fn find_fewest_poss(&self) -> Option<(usize, usize)> {
         let mut smallest_count = 10;
         let mut fewest_so_far = None;
         for row in 0..BOARD_SIZE {
@@ -168,7 +168,7 @@ impl Board {
                     let count = cell.poss.iter().filter(|p| **p).count();
                     if smallest_count > count {
                         smallest_count = count;
-                        fewest_so_far = Some((row, col, cell));
+                        fewest_so_far = Some((row, col));
                     }
                 }
             }

@@ -4,14 +4,10 @@ pub fn combo(board: &mut Board) -> Option<Board> {
     board.set_all_poss();
     let mut history_stack: Vec<History> = Vec::new();
 
-    while let Some((row, col, cell)) = board.find_fewest_poss() {
-        // let row = row;
-        // let col = col;
-        // let cell = cell;
-        // println!("{}", board.print_board());
+    while let Some((row, col)) = board.find_fewest_poss() {
         let mut did_not_find_guess = true;
         for i in 0..BOARD_SIZE {
-            if cell.poss[i] {
+            if board.grid[row][col].poss[i] {
                 did_not_find_guess = false;
                 let guess = (i + 1) as u8;
                 history_stack.push(History {
