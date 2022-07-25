@@ -6,10 +6,9 @@ pub fn prev_poss(board: &mut Board) -> Option<Board> {
 }
 
 fn helper(board: &mut Board) -> Option<Board> {
-    let maybe_cell = board.find_blank_cell();
-    if let Some((row, col, cell)) = maybe_cell {
+    if let Some((row, col)) = board.find_blank_cell() {
         for i in 0..BOARD_SIZE {
-            if cell.poss[i] {
+            if board.grid[row][col].poss[i] {
                 let mut copied_board = *board;
                 let guess = (i + 1) as u8;
                 copied_board.grid[row][col].val = guess;

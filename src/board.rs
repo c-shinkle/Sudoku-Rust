@@ -146,12 +146,11 @@ impl Board {
         }
     }
 
-    pub fn find_blank_cell(&self) -> Option<(usize, usize, &Cell)> {
+    pub fn find_blank_cell(&self) -> Option<(usize, usize)> {
         for row in 0..BOARD_SIZE {
             for col in 0..BOARD_SIZE {
-                let cell = &self.grid[row][col];
-                if cell.is_blank() {
-                    return Some((row, col, cell));
+                if self.grid[row][col].is_blank() {
+                    return Some((row, col));
                 }
             }
         }
