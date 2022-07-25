@@ -16,17 +16,17 @@ pub struct Board {
     pub grid: [[Cell; BOARD_SIZE]; BOARD_SIZE],
 }
 
-#[derive(Debug)]
-pub struct Change {
+#[derive(Copy, Clone, Debug)]
+pub struct Location {
     pub row: usize,
     pub col: usize,
-    pub cell: Cell,
 }
 
 #[derive(Debug)]
 pub struct ChangesWithGuess {
-    pub changes: Vec<Change>,
     pub guess: u8,
+    pub guess_location: Location,
+    pub changes: Vec<Location>,
 }
 
 impl Cell {
@@ -181,6 +181,26 @@ impl Board {
         fewest_so_far
     }
 
+    pub fn find_fewest_poss_location(&self) -> Option<(Location, usize)> {
+        let mut smallest_count = 10;
+        let mut fewest_so_far = None;
+        for row in 0..BOARD_SIZE {
+            for col in 0..BOARD_SIZE {
+                let cell = &self.grid[row][col];
+                if cell.is_blank() {
+                    let count = cell.poss.iter().filter(|p| **p).count();
+                    if count == 0 {
+                        return Some((Location { row, col }, count));
+                    } else if smallest_count > count {
+                        smallest_count = count;
+                        fewest_so_far = Some((Location { row, col }, count));
+                    }
+                }
+            }
+        }
+        fewest_so_far
+    }
+
     pub fn update_affected_poss(&mut self, row: usize, col: usize, val: u8) {
         //update row
         for i in 0..BOARD_SIZE {
@@ -209,31 +229,30 @@ impl Board {
         }
     }
 
-    pub fn update_affected_poss_with_changes(&mut self, row: usize, col: usize, guess: u8) -> ChangesWithGuess {
+    pub fn update_affected_poss_with_changes(&mut self, location: Location, guess: u8) -> Vec<Location> {
         let mut changes = Vec::new();
-        let poss = (guess - 1) as usize;
+        let Location { row, col } = location;
+        let poss_index = (guess - 1) as usize;
         //update row
         for i in 0..BOARD_SIZE {
             let mut cell = &mut self.grid[row][i];
-            if cell.is_blank() && cell.poss[poss] {
-                changes.push(Change {
+            if cell.is_blank() && cell.poss[poss_index] {
+                cell.poss[poss_index] = false;
+                changes.push(Location {
                     row,
                     col: i,
-                    cell: *cell,
                 });
-                cell.poss[poss] = false;
             }
         }
         //update col
         for i in 0..BOARD_SIZE {
             let mut cell = &mut self.grid[i][col];
-            if cell.is_blank() && cell.poss[poss] {
-                changes.push(Change {
+            if cell.is_blank() && cell.poss[poss_index] {
+                cell.poss[poss_index] = false;
+                changes.push(Location {
                     row: i,
                     col,
-                    cell: *cell,
                 });
-                cell.poss[poss] = false;
             }
         }
         //update box
@@ -243,22 +262,20 @@ impl Board {
             let grid_row = box_row * 3 + (i / 3);
             let grid_col = box_col * 3 + (i % 3);
             let mut cell = &mut self.grid[grid_row][grid_col];
-            if cell.is_blank() && cell.poss[poss] {
-                changes.push(Change {
+            if cell.is_blank() && cell.poss[poss_index] {
+                cell.poss[poss_index] = false;
+                changes.push(Location {
                     row: grid_row,
                     col: grid_col,
-                    cell: *cell,
                 });
-                cell.poss[poss] = false;
             }
         }
-        ChangesWithGuess { changes, guess }
+        changes
     }
 
-    pub fn reverse_affected_poss(&mut self, changes: Vec<Change>) {
+    pub fn reverse_affected_poss(&mut self, changes: Vec<Location>, guess: u8) {
         for change in changes {
-            let Change { row, col, cell } = change;
-            self.grid[row][col] = cell;
+            self.grid[change.row][change.col].poss[(guess - 1) as usize] = true;
         }
     }
 }
@@ -408,7 +425,7 @@ mod tests {
         given.grid[4][4].val = 8;
         given.grid[4][4].poss = false_poss;
         //when
-        given.update_affected_poss_with_changes(4, 4, 8);
+        given.update_affected_poss_with_changes(Location { row: 4, col: 4 }, 8);
         let actual = given;
         //then
         #[rustfmt::skip]
