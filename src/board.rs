@@ -175,6 +175,26 @@ impl Board {
         fewest_so_far
     }
 
+    pub fn find_fewest_poss_count(&self) -> Option<(usize, usize, usize)> {
+        let mut smallest_count = 10;
+        let mut fewest_so_far = None;
+        for row in 0..BOARD_SIZE {
+            for col in 0..BOARD_SIZE {
+                let cell = &self.grid[row][col];
+                if cell.is_blank() {
+                    let count = cell.poss.iter().filter(|p| **p).count();
+                    if count == 0 {
+                        return Some((row, col, 0));
+                    } else if smallest_count > count {
+                        smallest_count = count;
+                        fewest_so_far = Some((row, col, count));
+                    }
+                }
+            }
+        }
+        fewest_so_far
+    }
+
     pub fn update_affected_poss(&mut self, row: usize, col: usize, val: u8) {
         //update row
         for i in 0..BOARD_SIZE {
