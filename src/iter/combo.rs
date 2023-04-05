@@ -1,4 +1,4 @@
-use crate::board::{Board, History, BOARD_SIZE};
+use crate::board::{Board, History};
 
 pub fn combo(board: &mut Board) -> Option<Board> {
     board.set_all_poss();
@@ -6,31 +6,25 @@ pub fn combo(board: &mut Board) -> Option<Board> {
 
     while let Some((row, col, count)) = board.find_fewest_poss_count() {
         if count == 0 {
-            let maybe_board = history_stack.pop();
-            maybe_board.as_ref()?;
+            let history = history_stack.pop()?;
             let History {
                 board: prev_board,
                 guess,
                 row: prev_row,
                 col: prev_col,
-            } = maybe_board.unwrap();
+            } = history;
             *board = prev_board;
             board.grid[prev_row][prev_col].poss[(guess - 1) as usize] = false;
-        } else {
-            for i in 0..BOARD_SIZE {
-                if board.grid[row][col].poss[i] {
-                    let guess = (i + 1) as u8;
-                    history_stack.push(History {
-                        board: *board,
-                        guess,
-                        row,
-                        col,
-                    });
-                    board.grid[row][col].val = guess;
-                    board.update_affected_poss(row, col, guess);
-                    break;
-                }
-            }
+        } else if let Some(i) = board.grid[row][col].poss.into_iter().position(|p| p) {
+            let guess = (i + 1) as u8;
+            history_stack.push(History {
+                board: *board,
+                guess,
+                row,
+                col,
+            });
+            board.grid[row][col].val = guess;
+            board.update_affected_poss(row, col, guess);
         }
     }
     Some(*board)

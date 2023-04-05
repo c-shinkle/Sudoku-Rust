@@ -1,8 +1,7 @@
 use std::fs::File;
-use std::io::{BufRead, BufReader, Result};
+use std::io::{self, BufRead, BufReader};
 
 pub const BOARD_SIZE: usize = 9;
-const TOO_FEW_CHARS: &str = "Should be exactly 81 chars in string slice.";
 const TRUE_POSS: [bool; BOARD_SIZE] = [true; BOARD_SIZE];
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -51,26 +50,23 @@ impl Board {
         let mut chars = values.chars();
         for row in 0..BOARD_SIZE {
             for col in 0..BOARD_SIZE {
-                self.grid[row][col].val = chars.next().expect(TOO_FEW_CHARS) as u8 - b'0';
+                let msg = "Should be exactly 81 chars in string slice.";
+                self.grid[row][col].val = chars.next().expect(msg) as u8 - b'0';
             }
         }
     }
 
-    pub fn set_board_file(&mut self, path: &str) -> Result<()> {
-        let file = File::open(path)?;
-        let mut reader = BufReader::new(file);
-        let mut buffer = String::with_capacity(BOARD_SIZE + 1);
-        let mut values = String::with_capacity(BOARD_SIZE * BOARD_SIZE);
-        for _ in 0..BOARD_SIZE {
-            reader.read_line(&mut buffer)?;
-            values.push_str(&buffer[0..BOARD_SIZE]);
-            buffer.clear();
+    pub fn set_board_file(&mut self, path: &str) -> io::Result<()> {
+        let mut board_string = String::new();
+        for line in BufReader::new(File::open(path)?).lines() {
+            board_string.push_str(&line?);
         }
-        self.set_board_string(values.as_str());
+        self.set_board_string(&board_string);
         Ok(())
     }
 
     pub fn print_board(&self) -> String {
+        // 12 chars * 11 lines
         let mut chars = String::with_capacity(132);
 
         Board::add_ith_row(self.grid[0], &mut chars);
@@ -117,18 +113,16 @@ impl Board {
             for col in 0..BOARD_SIZE {
                 //check row
                 for i in 0..BOARD_SIZE {
-                    let val = self.grid[row][i].val;
-                    if val != 0 {
-                        let val_index = (val - 1) as usize;
-                        self.grid[row][col].poss[val_index] = false;
+                    let cell = self.grid[row][i];
+                    if !cell.is_blank() {
+                        self.grid[row][col].poss[(cell.val - 1) as usize] = false;
                     }
                 }
                 //check col
                 for i in 0..BOARD_SIZE {
-                    let val = self.grid[i][col].val;
-                    if val != 0 {
-                        let val_index = (val - 1) as usize;
-                        self.grid[row][col].poss[val_index] = false;
+                    let cell = self.grid[i][col];
+                    if !cell.is_blank() {
+                        self.grid[row][col].poss[(cell.val - 1) as usize] = false;
                     }
                 }
                 //check box
@@ -137,9 +131,9 @@ impl Board {
                 for i in 0..BOARD_SIZE {
                     let grid_row = box_row * 3 + (i / 3);
                     let grid_col = box_col * 3 + (i % 3);
-                    let val = self.grid[grid_row][grid_col].val;
-                    if val != 0 {
-                        self.grid[row][col].poss[(val - 1) as usize] = false;
+                    let cell = self.grid[grid_row][grid_col];
+                    if !cell.is_blank() {
+                        self.grid[row][col].poss[(cell.val - 1) as usize] = false;
                     }
                 }
             }
@@ -182,7 +176,7 @@ impl Board {
             for col in 0..BOARD_SIZE {
                 let cell = &self.grid[row][col];
                 if cell.is_blank() {
-                    let count = cell.poss.iter().filter(|p| **p).count();
+                    let count = cell.poss.into_iter().filter(|p| *p).count();
                     if count == 0 {
                         return Some((row, col, 0));
                     } else if smallest_count > count {
