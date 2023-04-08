@@ -1,8 +1,8 @@
 use crate::board::{Board, BOARD_SIZE};
 
-pub fn combo(board: &mut Board) -> Option<Board> {
+pub fn combo(board: &mut Board) -> bool {
     board.set_all_poss();
-    helper(board)
+    helper(board).is_some()
 }
 
 fn helper(board: &mut Board) -> Option<Board> {

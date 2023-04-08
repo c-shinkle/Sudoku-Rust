@@ -18,8 +18,8 @@ mod tests {
         given
     }
 
-    fn teardown(board: Option<Board>) {
-        if board.is_none() {
+    fn teardown(finished: bool) {
+        if !finished {
             panic!("No solution!")
         }
     }
@@ -27,60 +27,60 @@ mod tests {
     #[bench]
     fn rec_naive_hard_sudoku(b: &mut Bencher) {
         let mut given = setup();
-        let mut maybe_solved = Option::default();
+        let mut finished = false;
 
         b.iter(|| {
-            maybe_solved = rec::naive::naive(&mut given);
+            finished = rec::naive::naive(&mut given);
         });
 
-        teardown(maybe_solved);
+        teardown(finished);
     }
 
     #[bench]
     fn rec_fewest_poss_hard_sudoku(b: &mut Bencher) {
         let mut given = setup();
-        let mut maybe_solved = Option::default();
+        let mut finished = false;
 
         b.iter(|| {
-            maybe_solved = rec::fewest_poss::fewest_poss(&mut given);
+            finished = rec::fewest_poss::fewest_poss(&mut given);
         });
 
-        teardown(maybe_solved);
+        teardown(finished);
     }
 
     #[bench]
     fn rec_prev_poss_hard_sudoku(b: &mut Bencher) {
         let mut given = setup();
-        let mut maybe_solved = Option::default();
+        let mut finished = false;
 
         b.iter(|| {
-            maybe_solved = rec::prev_poss::prev_poss(&mut given);
+            finished = rec::prev_poss::prev_poss(&mut given);
         });
 
-        teardown(maybe_solved);
+        teardown(finished);
     }
 
     #[bench]
     fn rec_combo_hard_sudoku(b: &mut Bencher) {
         let mut given = setup();
-        let mut maybe_solved = Option::default();
+        let mut finished = false;
 
         b.iter(|| {
-            maybe_solved = rec::combo::combo(&mut given);
+            finished = rec::combo::combo(&mut given);
         });
 
-        teardown(maybe_solved);
+        teardown(finished);
     }
 
     #[bench]
     fn iter_combo_hard_sudoku(b: &mut Bencher) {
         let mut given = setup();
-        let mut maybe_solved = Option::default();
+        let mut finished = false;
 
         b.iter(|| {
-            maybe_solved = iter::combo::combo(&mut given);
+            finished = iter::combo::combo(&mut given);
         });
 
-        teardown(maybe_solved);
+        teardown(finished);
     }
 }

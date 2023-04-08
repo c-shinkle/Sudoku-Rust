@@ -1,3 +1,4 @@
+use std::fmt::{self, Display, Formatter};
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
 
@@ -33,6 +34,12 @@ impl Cell {
 impl Default for Board {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl Display for Board {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.print_board())
     }
 }
 

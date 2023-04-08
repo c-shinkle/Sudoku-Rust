@@ -1,12 +1,16 @@
 use crate::board::{Board, History};
 
-pub fn combo(board: &mut Board) -> Option<Board> {
+pub fn combo(board: &mut Board) -> bool {
     board.set_all_poss();
     let mut history_stack: Vec<History> = Vec::new();
 
     while let Some((row, col, count)) = board.find_fewest_poss_count() {
         if count == 0 {
-            let history = history_stack.pop()?;
+            let maybe_history = history_stack.pop();
+            if maybe_history.is_none() {
+                return false;
+            }
+            let history = maybe_history.unwrap();
             let History {
                 board: prev_board,
                 guess,
@@ -27,5 +31,5 @@ pub fn combo(board: &mut Board) -> Option<Board> {
             board.update_affected_poss(row, col, guess);
         }
     }
-    Some(*board)
+    true
 }

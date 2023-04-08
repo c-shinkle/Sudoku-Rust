@@ -8,7 +8,11 @@ fn main() {
         .expect("File to be present");
     for _ in 0..1 {
         let mut new = original;
-        let solution = combo(&mut new).expect("This board is unsolvable!");
-        println!("{}", solution.print_board());
+        let solution = combo(&mut new);
+        if solution {
+            println!("{new}");
+        } else {
+            panic!("No solution!");
+        }
     }
 }

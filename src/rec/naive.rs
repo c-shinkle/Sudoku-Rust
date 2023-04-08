@@ -1,13 +1,17 @@
 use crate::board::{Board, BOARD_SIZE};
 
-pub fn naive(board: &mut Board) -> Option<Board> {
+pub fn naive(board: &mut Board) -> bool {
+    helper(board).is_some()
+}
+
+fn helper(board: &mut Board) -> Option<Board> {
     board.set_all_poss();
     if let Some((row, col)) = board.find_blank_cell() {
         for i in 0..BOARD_SIZE {
             if board.grid[row][col].poss[i] {
                 let mut copied_board = *board;
                 copied_board.grid[row][col].val = (i + 1) as u8;
-                let maybe_solved = naive(&mut copied_board);
+                let maybe_solved = helper(&mut copied_board);
                 if maybe_solved.is_some() {
                     return maybe_solved;
                 }
@@ -42,7 +46,7 @@ mod tests {
         //when
         let actual = naive(&mut given);
         //then
-        assert!(actual.is_some());
+        assert!(actual);
         let mut expected = Board::new();
         expected.set_board_string(
             "\
@@ -57,6 +61,6 @@ mod tests {
             642598173\
         ",
         );
-        assert_eq!(expected.print_board(), actual.unwrap().print_board());
+        assert_eq!(expected.print_board(), given.print_board());
     }
 }
