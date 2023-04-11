@@ -1,5 +1,5 @@
 use sudoku_rust::board::Board;
-use sudoku_rust::iter::combo::combo;
+use sudoku_rust::rec::combo::combo;
 
 fn main() {
     let mut original = Board::new();

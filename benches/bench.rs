@@ -5,7 +5,7 @@ extern crate test;
 #[cfg(test)]
 mod tests {
     use std::panic;
-    use test::Bencher;
+    use test::{black_box, Bencher};
 
     use sudoku_rust::board::Board;
     use sudoku_rust::{iter, rec};
@@ -30,7 +30,7 @@ mod tests {
         let mut finished = false;
 
         b.iter(|| {
-            finished = rec::naive::naive(&mut given);
+            finished = black_box(rec::naive::naive(&mut given));
         });
 
         teardown(finished);
@@ -42,7 +42,7 @@ mod tests {
         let mut finished = false;
 
         b.iter(|| {
-            finished = rec::fewest_poss::fewest_poss(&mut given);
+            finished = black_box(rec::fewest_poss::fewest_poss(&mut given));
         });
 
         teardown(finished);
@@ -54,7 +54,7 @@ mod tests {
         let mut finished = false;
 
         b.iter(|| {
-            finished = rec::prev_poss::prev_poss(&mut given);
+            finished = black_box(rec::prev_poss::prev_poss(&mut given));
         });
 
         teardown(finished);
@@ -66,7 +66,7 @@ mod tests {
         let mut finished = false;
 
         b.iter(|| {
-            finished = rec::combo::combo(&mut given);
+            finished = black_box(rec::combo::combo(&mut given));
         });
 
         teardown(finished);
@@ -78,7 +78,7 @@ mod tests {
         let mut finished = false;
 
         b.iter(|| {
-            finished = iter::combo::combo(&mut given);
+            finished = black_box(iter::combo::combo(&mut given));
         });
 
         teardown(finished);

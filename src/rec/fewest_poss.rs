@@ -1,7 +1,11 @@
 use crate::board::{Board, BOARD_SIZE};
 
 pub fn fewest_poss(board: &mut Board) -> bool {
-    helper(board).is_some()
+    if let Some(solved_board) = helper(board) {
+        *board = solved_board;
+        return true;
+    }
+    false
 }
 
 fn helper(board: &mut Board) -> Option<Board> {
